@@ -20,10 +20,12 @@ export default function ContenedorPelisFamosas() {
                 {peliculas.map(peli => (
                     <TarjetaPeli 
                         key={peli.id}
+                        id={peli.id}
                         titulo={peli.title}
                         descripcion={peli.overview}
                         rating={peli.vote_average}
                         imagenPath={peli.poster_path}
+                        pelicula={peli}
                     />
                 ))}
             </div>

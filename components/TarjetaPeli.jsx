@@ -4,14 +4,17 @@ import Image from "next/image";
 import BotonFavorito from "./BotonFavorito";
 
 export default function TarjetaPeli({
+  id = null,
   titulo = "Pelicula",
   descripcion = "Descripcion",
   rating = 8.5,
-  imagenPath = [],
+  imagenPath = null,
+  pelicula = null,
+  onFavoritoChange = null,
 }) {
   const imageUrl = imagenPath
     ? `https://image.tmdb.org/t/p/w500${imagenPath}`
-    : [];
+    : null;
 
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 w-64">
@@ -19,7 +22,18 @@ export default function TarjetaPeli({
         <span className="bg-yellow-500 text-black font-bold px-2 py-1 rounded text-sm">
           * {Math.round(rating * 10) / 10}
         </span>
-        <BotonFavorito />
+        <BotonFavorito
+          pelicula={
+            pelicula ?? {
+              id,
+              title: titulo,
+              overview: descripcion,
+              vote_average: rating,
+              poster_path: imagenPath,
+            }
+          }
+          onChange={onFavoritoChange}
+        />
       </div>
 
       <div className="bg-gray-700 h-40 rounded mb-3 flex items-center justify-center relative overflow-hidden">
