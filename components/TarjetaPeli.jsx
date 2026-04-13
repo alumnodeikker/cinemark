@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import BotonFavorito from "./BotonFavorito";
+import Link from "next/link";
 
 export default function TarjetaPeli({
   id = null,
   titulo = "Pelicula",
   descripcion = "Descripcion",
-  rating = 8.5,
+  rating = 0,
   imagenPath = null,
   pelicula = null,
   onFavoritoChange = null,
@@ -16,7 +17,7 @@ export default function TarjetaPeli({
     ? `https://image.tmdb.org/t/p/w500${imagenPath}`
     : null;
 
-  return (
+  const Card = (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 w-64">
       <div className="flex justify-between items-center mb-3">
         <span className="bg-yellow-500 text-black font-bold px-2 py-1 rounded text-sm">
@@ -65,4 +66,5 @@ export default function TarjetaPeli({
       </div>
     </div>
   );
+  return id ? <Link href={`/peli/${id}`}>{Card}</Link> : Card;
 }
