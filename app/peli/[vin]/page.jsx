@@ -1,16 +1,16 @@
-import Image from 'next/image'; // Asegúrate de importar Image
+import { fetchPeli } from '@/lib/Api_';
+import Image from 'next/image'; // importar Image
 
-async function fetchPeli(idPeli) {
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${idPeli}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&append_to_response=videos`);
-    const data = await res.json();
-    return data;
-}
+
 
 export default async function FichaPelicula({ params }) {
+
+
     const { vin } = await params;
     const peli = await fetchPeli(vin);
     const trailerKey = peli.videos?.results?.find(v => v.type === "Trailer")?.key;
-    const trailerUrl = `https://youtube.com/watch?v=${trailerKey}`;
+    const trailerUrl = `https://youtube-nocookie.com/embed/${trailerKey}?rel=0&modestbranding=1`;
+
 
     // 1. Definimos la variable imagenPath extrayéndola de 'peli'
     const imagenPath = peli.poster_path;
@@ -20,6 +20,7 @@ export default async function FichaPelicula({ params }) {
         ? `https://image.tmdb.org/t/p/w500${imagenPath}`
         : null;
     console.log(trailerKey)
+
     return (
         <main className="relative min-h-screen bg-[#141414] text-white overflow-hidden font-sans w-full">
 
@@ -111,6 +112,17 @@ export default async function FichaPelicula({ params }) {
                             No hay Trailer
                         </button>
                     )}
+
+
+{/* //Video inscruptado  */}
+                    
+                </div>
+                <iframe src={trailerUrl}
+                    title={`tráiler de ${peli.title} `} ></iframe>
+
+                <div>
+
+                
                 </div>
             </div >
         </main >

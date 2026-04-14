@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function TarjetaPeli({
   id = null,
-  titulo = "Pelicula",
+  titulo = "Peli",
   descripcion = "Descripcion",
   rating = 0,
   imagenPath = null,
@@ -23,6 +23,7 @@ export default function TarjetaPeli({
         <span className="bg-yellow-500 text-black font-bold px-2 py-1 rounded text-sm">
           * {Math.round(rating * 10) / 10}
         </span>
+
         <BotonFavorito
           pelicula={
             pelicula ?? {
