@@ -1,7 +1,9 @@
 import ContenedorPelisFamosas from "@/components/ContenedorPelisFamosas";
 
-export default function Populares() {
+export default function Inicio() {
   return (
-    <main>  </main>
+    <main className="space-y-6">
+      <ContenedorPelisFamosas />
+    </main>
   );
 }

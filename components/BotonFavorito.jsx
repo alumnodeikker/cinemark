@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const STORAGE_KEY = "favoritos";
 
@@ -22,14 +22,17 @@ function guardarFavoritos(lista) {
   }
 }
 
-export default function BotonFavorito({ pelicula = null, onChange = null }) {
-  const [favorito, setFavorito] = useState(false);
+function esFavorita(idPelicula) {
+  if (!idPelicula) return false;
+  const lista = leerFavoritos();
+  return lista.some((p) => p.id === idPelicula);
+}
 
-  useEffect(() => {
-    if (!pelicula?.id) return;
-    const lista = leerFavoritos();
-    setFavorito(lista.some((p) => p.id === pelicula.id));
-  }, [pelicula?.id]);
+export default function BotonFavorito({ pelicula = null, onChange = null }) {
+  const [favorito, setFavorito] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return esFavorita(pelicula?.id);
+  });
 
   const toggleFavorito = () => {
     if (!pelicula?.id) return;
@@ -78,8 +81,8 @@ export default function BotonFavorito({ pelicula = null, onChange = null }) {
           strokeLinejoin="round"
           className={
             favorito
-              ? "fill-red-500 stroke-red-700 transition-colors duration-200"
-              : "fill-red-500/10 stroke-red-900 hover:fill-red-500/30 transition-colors ease-in-out duration-300"
+              ? "fill-blue-500 stroke-blue-700 transition-colors duration-200"
+              : "fill-blue-500/10 stroke-blue-900 hover:fill-blue-500/30 transition-colors ease-in-out duration-300"
           }
         />
       </svg>

@@ -1,131 +1,267 @@
-import { fetchPeli } from '@/lib/Api_';
-import Image from 'next/image'; // importar Image
+import Image from "next/image";
+import Link from "next/link";
+import { buildYoutubeEmbedUrl, fetchPeli } from "@/lib/Api_";
 
+function pickYoutubeTrailer(videos = []) {
+  if (!Array.isArray(videos) || videos.length === 0) return null;
 
+  return (
+    videos.find(
+      (video) =>
+        video?.site === "YouTube" &&
+        video?.type === "Trailer" &&
+        video?.official === true
+    ) ||
+    videos.find(
+      (video) => video?.site === "YouTube" && video?.type === "Trailer"
+    ) ||
+    videos.find((video) => video?.site === "YouTube") ||
+    null
+  );
+}
+
+function formatRuntime(minutes) {
+  if (!minutes || Number.isNaN(Number(minutes))) return "N/D";
+  const total = Number(minutes);
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+}
+
+function formatMoney(value) {
+  if (!value || Number(value) <= 0) return "N/D";
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function pickCertification(results = []) {
+  const priority = ["ES", "US"];
+
+  for (const country of priority) {
+    const entry = results.find((item) => item?.iso_3166_1 === country);
+    const cert =
+      entry?.release_dates?.find((date) => Boolean(date?.certification))
+        ?.certification ?? "";
+    if (cert) return cert;
+  }
+
+  return "N/D";
+}
 
 export default async function FichaPelicula({ params }) {
+  const { vin } = await params;
+  const peli = await fetchPeli(vin);
 
-
-    const { vin } = await params;
-    const peli = await fetchPeli(vin);
-    const trailerKey = peli.videos?.results?.find(v => v.type === "Trailer")?.key;
-    const trailerUrl = `https://youtube-nocookie.com/embed/${trailerKey}?rel=0&modestbranding=1`;
-
-
-    // 1. Definimos la variable imagenPath extrayéndola de 'peli'
-    const imagenPath = peli.poster_path;
-
-    // 2. Definimos imageUrl AQUÍ adentro
-    const imageUrl = imagenPath
-        ? `https://image.tmdb.org/t/p/w500${imagenPath}`
-        : null;
-    console.log(trailerKey)
-
+  if (!peli?.id) {
     return (
-        <main className="relative min-h-screen bg-[#141414] text-white overflow-hidden font-sans w-full">
+      <main className="netflix-panel p-8 text-white">
+        No se pudo cargar esta pelicula.
+      </main>
+    );
+  }
 
-            {/* 1. Fondo Hero (Backdrop) opcional para el look Netflix */}
-            <div className="absolute top-0 left-0 w-full h-[70vh] z-0">
-                {peli.backdrop_path && (
-                    <Image
-                        src={`https://image.tmdb.org/t/p/original${peli.backdrop_path}`}
-                        alt=""
-                        fill
-                        className="object-cover opacity-40"
-                        priority
-                    />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-[#141414]/60" />
+  const trailer = pickYoutubeTrailer(peli?.videos?.results);
+  const trailerUrl = buildYoutubeEmbedUrl(trailer?.key);
+  const year = peli.release_date?.split("-")?.[0] ?? "N/D";
+  const match = Math.round((peli.vote_average ?? 0) * 10);
+  const runtime = formatRuntime(peli.runtime);
+  const genres = peli.genres?.map((genre) => genre.name).join(", ") || "N/D";
+  const cast = peli.credits?.cast?.slice(0, 10) ?? [];
+  const companies =
+    peli.production_companies?.slice(0, 3).map((c) => c.name).join(", ") ||
+    "N/D";
+  const certification = pickCertification(peli.release_dates?.results ?? []);
+
+  const posterUrl = peli.poster_path
+    ? `https://image.tmdb.org/t/p/w500${peli.poster_path}`
+    : null;
+  const backdropUrl = peli.backdrop_path
+    ? `https://image.tmdb.org/t/p/original${peli.backdrop_path}`
+    : null;
+
+  return (
+    <main className="space-y-5 text-white">
+      <section className="relative min-h-[58vh] overflow-hidden rounded-sm border border-white/10">
+        {backdropUrl && (
+          <Image
+            src={backdropUrl}
+            alt={`Fondo de ${peli.title}`}
+            fill
+            priority
+            className="object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
+
+        <div className="relative z-10 flex h-full max-w-2xl flex-col justify-end gap-4 p-5 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-300">
+            Ficha completa
+          </p>
+          <h1 className="text-4xl font-black uppercase leading-tight sm:text-6xl">
+            {peli.title}
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-3 text-sm sm:text-base">
+            <span className="font-bold text-emerald-400">{match}% de coincidencia</span>
+            <span>{year}</span>
+            <span>{runtime}</span>
+            <span className="rounded-sm border border-white/25 px-2 py-0.5 text-xs">
+              {certification}
+            </span>
+          </div>
+
+          <p className="max-w-xl text-sm text-white/85 sm:text-base">{peli.overview}</p>
+
+          <div className="flex flex-wrap gap-3">
+            {trailerUrl && (
+              <a
+                href="#trailer"
+                className="rounded-sm bg-white px-5 py-2 text-sm font-bold text-black hover:bg-white/90"
+              >
+                Ver trailer
+              </a>
+            )}
+            <Link
+              href="/"
+              className="rounded-sm border border-white/40 bg-white/10 px-5 py-2 text-sm font-semibold text-white hover:bg-white/20"
+            >
+              Volver al inicio
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+        <article className="netflix-panel p-4 sm:p-5">
+          <h2 className="text-2xl font-black uppercase">Informacion importante</h2>
+
+          <div className="mt-4 flex gap-4">
+            <div className="relative hidden w-36 flex-shrink-0 overflow-hidden rounded-sm border border-white/10 sm:block">
+              {posterUrl ? (
+                <Image
+                  src={posterUrl}
+                  alt={peli.title}
+                  width={220}
+                  height={330}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full min-h-[220px] items-center justify-center bg-neutral-800 text-sm text-white/50">
+                  Sin poster
+                </div>
+              )}
             </div>
 
-            {/* 2. Contenido Principal */}
-            <div className="relative z-10 pt-40 px-6 md:px-16 flex flex-col md:flex-row gap-10 items-center md:items-end">
+            <dl className="grid w-full grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-white/60">Fecha estreno</dt>
+                <dd className="font-semibold">{peli.release_date || "N/D"}</dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Rating</dt>
+                <dd className="font-semibold">
+                  {peli.vote_average?.toFixed?.(1) ?? "N/D"} / 10
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Duracion</dt>
+                <dd className="font-semibold">{runtime}</dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Generos</dt>
+                <dd className="font-semibold">{genres}</dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Idioma original</dt>
+                <dd className="font-semibold uppercase">
+                  {peli.original_language || "N/D"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Estado</dt>
+                <dd className="font-semibold">{peli.status || "N/D"}</dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Presupuesto</dt>
+                <dd className="font-semibold">{formatMoney(peli.budget)}</dd>
+              </div>
+              <div>
+                <dt className="text-white/60">Recaudacion</dt>
+                <dd className="font-semibold">{formatMoney(peli.revenue)}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-white/60">Productoras</dt>
+                <dd className="font-semibold">{companies}</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
 
-                {/* TU BLOQUE DE IMAGEN MANTENIDO */}
-                {imageUrl && (
-                    <div className="relative w-64 h-96 flex-shrink-0 shadow-2xl rounded-md overflow-hidden border border-white/10">
+        <article className="netflix-panel p-4 sm:p-5">
+          <h2 className="text-2xl font-black uppercase">Actores principales</h2>
+
+          {cast.length > 0 ? (
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {cast.map((actor) => {
+                const profile = actor.profile_path
+                  ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+                  : null;
+
+                return (
+                  <div
+                    key={`${actor.id}-${actor.cast_id}`}
+                    className="rounded-sm border border-white/10 bg-black/35 p-2"
+                  >
+                    <div className="relative mb-2 aspect-[3/4] overflow-hidden rounded-sm bg-neutral-800">
+                      {profile ? (
                         <Image
-                            src={imageUrl}
-                            alt={peli.title}
-                            fill
-                            sizes="256px"
-                            className="object-cover"
+                          src={profile}
+                          alt={actor.name}
+                          fill
+                          sizes="120px"
+                          className="object-cover"
                         />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-[11px] text-white/55">
+                          Sin foto
+                        </div>
+                      )}
                     </div>
-                )}
-
-                {/* Información al estilo Netflix */}
-                <div className="max-w-2xl mb-4 text-center md:text-left">
-                    <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter drop-shadow-xl">
-                        {peli.title}
-                    </h1>
-
-                    <div className="flex items-center justify-center md:justify-start gap-4 mb-6 text-sm font-semibold">
-                        <span className="text-green-400 font-bold">
-                            {Math.round(peli.vote_average * 10)}% de coincidencia
-                        </span>
-                        <span className="text-gray-400">{peli.release_date?.split('-')[0]}</span>
-                        <span className="border border-gray-500 px-1.5 py-0.5 text-[10px] rounded">HD</span>
-                    </div>
-
-                    <p className="text-lg text-gray-200 leading-relaxed line-clamp-4 drop-shadow-md">
-                        {peli.overview}
+                    <p className="line-clamp-1 text-xs font-bold">{actor.name}</p>
+                    <p className="line-clamp-1 text-[11px] text-white/65">
+                      {actor.character || "Sin personaje"}
                     </p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-white/65">No hay reparto disponible.</p>
+          )}
+        </article>
+      </section>
 
-                    {/* Botones de acción */}
-                    <div className="flex gap-3 mt-8 justify-center md:justify-start">
-                        <button
-                            type="button"
-                            className="bg-white text-black px-8 py-2 rounded-md font-bold flex items-center gap-2 hover:bg-white/80 transition active:scale-95"
-                        >
-                            <span className="text-xl">▶</span> Reproducir
-                        </button>
-                        <button className="bg-gray-500/50 text-white px-8 py-2 rounded-md font-bold flex items-center gap-2 hover:bg-gray-500/40 transition backdrop-blur-md border border-white/10 active:scale-95">
-                            <span className="text-xl">ⓘ</span> Más información
-                        </button>
-                    </div>
-
-                    {/* <div className="mt-6 w-full max-w-3xl aspect-video rounded-md overflow-hidden border border-white/10 shadow-2xl mx-auto md:mx-0">
-                        <iframe
-                            src="https://goodstream.one/embed-mjtks7fpbkf7.html"
-                            title="Reproductor"               
-                            allowFullScreen
-                            className="w-full h-full"
-                        />
-                    </div> */}
-
-                </div>
-
-                <div className="flex gap-3 mt-8">
-                    {/* 4. AQUÍ USAMOS trailerUrl */}
-                    {trailerUrl ? (
-                        <a
-                            href={trailerUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-white text-black px-8 py-2.5 rounded font-bold"
-                        >
-                            ▶ Trailer
-                        </a>
-                    ) : (
-                        <button className="bg-gray-700 text-gray-400 px-8 py-2.5 rounded cursor-not-allowed">
-                            No hay Trailer
-                        </button>
-                    )}
-
-
-{/* //Video inscruptado  */}
-                    
-                </div>
-                <iframe src={trailerUrl}
-                    title={`tráiler de ${peli.title} `} ></iframe>
-
-                <div>
-
-                
-                </div>
-            </div >
-        </main >
-    );
-
+      {trailerUrl ? (
+        <section id="trailer" className="netflix-panel overflow-hidden p-3">
+          <h2 className="px-1 pb-3 text-2xl font-black uppercase">Trailer oficial</h2>
+          <iframe
+            src={trailerUrl}
+            title={`Trailer de ${peli.title}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            className="aspect-video w-full rounded-sm"
+          />
+        </section>
+      ) : (
+        <section className="netflix-panel p-5">
+          <p className="text-sm text-white/70">Esta pelicula no tiene trailer disponible.</p>
+        </section>
+      )}
+    </main>
+  );
 }
