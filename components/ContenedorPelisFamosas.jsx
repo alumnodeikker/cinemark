@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { traerPeliculas } from "../lib/Api_";
 import TarjetaPeli from "./TarjetaPeli";
+import FeaturedHero from "./FeaturedHero";
+import CelebrityCarousel from "./CelebrityCarousel";
 
 export default async function ContenedorPelisFamosas() {
   const peliculas = await traerPeliculas();
@@ -66,11 +68,14 @@ export default async function ContenedorPelisFamosas() {
               href={destacada?.id ? `/peli/${destacada.id}` : "/buscar"}
               className="rounded-sm border border-white/40 bg-white/12 px-5 py-2 text-sm font-semibold text-white hover:bg-white/20"
             >
-              Mas informacion
+              Más informacion
             </Link>
           </div>
         </div>
       </article>
+
+      <FeaturedHero />
+      
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
@@ -91,6 +96,8 @@ export default async function ContenedorPelisFamosas() {
           ))}
         </div>
       </section>
+
+      <CelebrityCarousel/>
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">

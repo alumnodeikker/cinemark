@@ -13,7 +13,8 @@ export default function TarjetaPeli({
   pelicula = null,
   onFavoritoChange = null,
   modo = "grid",
-}) {
+}) 
+{
   const imageUrl = imagenPath
     ? `https://image.tmdb.org/t/p/w500${imagenPath}`
     : null;
@@ -53,6 +54,7 @@ export default function TarjetaPeli({
           <span className="ml-6 rounded-sm bg-black/75 px-1.5 py-1 text-[11px] font-bold text-amber-300">
             ⭐ {Math.round(rating * 10) / 10}
           </span>
+          
           <BotonFavorito
             key={pelicula?.id ?? id}
             pelicula={
