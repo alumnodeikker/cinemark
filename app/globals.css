@@ -180,6 +180,14 @@ h3 {
   animation: fadeUp 0.45s ease-out both;
 }
 
+.hero-card {
+  min-height: 38rem;
+  background:
+    radial-gradient(circle at top, rgba(79, 140, 255, 0.14), transparent 32%),
+    linear-gradient(180deg, #08101d 0%, #05070d 100%);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+}
+
 @media (max-width: 900px) {
   .nfx-frame {
     grid-template-columns: 1fr;
@@ -205,5 +213,9 @@ h3 {
 
   .nfx-icon-label {
     display: none;
+  }
+
+  .hero-card {
+    min-height: auto;
   }
 }

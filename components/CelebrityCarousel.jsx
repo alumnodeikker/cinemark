@@ -32,7 +32,7 @@ export default function CelebrityCarousel() {
     return (
         <div className="w-full bg-black text-white px-4 py-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 bg-yellow-400"></span>
+                <span className="w-1 h-5 bg-blue-600"></span>
                 Celebridades más populares
             </h2>
 
@@ -46,7 +46,7 @@ export default function CelebrityCarousel() {
 
                 <div
                     ref={scrollRef}
-                    className="flex gap-6 overflow-x-auto px-8"
+                    className="poster-rail px-8"
                 >
                     {celebrities.map((celeb, i) => (
                         <div key={i} className="flex flex-col items-center min-w-[120px]">

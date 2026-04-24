@@ -4,6 +4,7 @@ import { traerPeliculas } from "../lib/Api_";
 import TarjetaPeli from "./TarjetaPeli";
 import FeaturedHero from "./FeaturedHero";
 import CelebrityCarousel from "./CelebrityCarousel";
+import Top10Grid from "./Top10Grid";
 
 export default async function ContenedorPelisFamosas() {
   const peliculas = await traerPeliculas();
@@ -55,11 +56,7 @@ export default async function ContenedorPelisFamosas() {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              href={
-                destacada?.id
-                  ? `/peli/${destacada.id}`
-                  : "/buscar"
-              }
+              href={destacada?.id ? `/peli/${destacada.id}` : "/buscar"}
               className="rounded-sm bg-white px-5 py-2 text-sm font-bold text-black hover:bg-white/90"
             >
               Reproducir
@@ -68,14 +65,13 @@ export default async function ContenedorPelisFamosas() {
               href={destacada?.id ? `/peli/${destacada.id}` : "/buscar"}
               className="rounded-sm border border-white/40 bg-white/12 px-5 py-2 text-sm font-semibold text-white hover:bg-white/20"
             >
-              Más informacion
+              Mas informacion
             </Link>
           </div>
         </div>
       </article>
 
       <FeaturedHero />
-      
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
@@ -97,7 +93,7 @@ export default async function ContenedorPelisFamosas() {
         </div>
       </section>
 
-      <CelebrityCarousel/>
+      <CelebrityCarousel />
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
@@ -118,6 +114,8 @@ export default async function ContenedorPelisFamosas() {
           ))}
         </div>
       </section>
+
+      <Top10Grid />
     </section>
   );
 }

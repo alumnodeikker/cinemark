@@ -19,8 +19,8 @@ export default function Top10Grid() {
       
       {/* Header */}
       <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-        <span className="w-1 h-6 bg-yellow-400"></span>
-        Mejores 10 en IMDb esta semana
+        <span className="w-1 h-6 bg-blue-600"></span>
+        Mejores 10 en esta semana
       </h2>
 
       {/* Top 3 grandes */}
