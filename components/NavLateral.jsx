@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -51,6 +51,7 @@ const ITEMS = [
   { href: "/buscar", label: "Buscar", icon: SearchIcon },
   { href: "/", label: "Inicio", icon: HomeIcon },
   { href: "/populares", label: "Populares", icon: GridIcon },
+  { href: "/mis_actores", label: "Actores", icon: GridIcon },
   { href: "/mis_fav", label: "Mi Lista", icon: HeartIcon },
 ];
 
@@ -85,3 +86,4 @@ export default function NavLateral() {
     </aside>
   );
 }
+
