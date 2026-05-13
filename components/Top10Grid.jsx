@@ -1,88 +1,66 @@
-"use client";
+﻿import Image from "next/image";
+import Link from "next/link";
 
-const top10 = [
-  { title: "The Boys", rank: 1, desc: "Un grupo de vigilantes lucha contra superhéroes corruptos." },
-  { title: "The Pitt", rank: 2, desc: "Drama hospitalario con crisis personales y profesionales." },
-  { title: "Proyecto Fin del Mundo", rank: 3, desc: "Un astronauta intenta salvar la Tierra." },
-  { title: "Bronca", rank: 4 },
-  { title: "Invincible", rank: 5 },
-  { title: "Euphoria", rank: 6 },
-  { title: "La momia", rank: 7 },
-  { title: "Street Fighter", rank: 8 },
-  { title: "Trash", rank: 9 },
-  { title: "Compañeras de cuarto", rank: 10 },
-];
+export default function Top10Grid({ peliculas = [] }) {
+  const top = peliculas.slice(0, 10);
 
-export default function Top10Grid() {
   return (
-    <div className="bg-black text-white px-4 py-8">
-      
-      {/* Header */}
-      <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-        <span className="w-1 h-6 bg-blue-600"></span>
-        Mejores 10 en esta semana
+    <section className="netflix-panel px-4 py-8 text-white">
+      <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold">
+        <span className="h-6 w-1 bg-blue-600" />
+        Mejores 10 peliculas de la semana
       </h2>
 
-      {/* Top 3 grandes */}
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        {top10.slice(0, 3).map((item) => (
-          <div
-            key={item.rank}
-            className="bg-zinc-900 rounded-xl p-4 flex gap-4 hover:bg-zinc-800 transition"
-          >
-            {/* Poster fake */}
-            <div className="w-24 h-36 rounded-lg bg-gradient-to-br from-blue-700 to-zinc-800 flex items-center justify-center text-3xl font-bold">
-              {item.rank}
-            </div>
-
-            {/* Info */}
-            <div className="flex-1">
-              <span className="bg-blue-600 text-xs px-2 py-1 rounded">
-                #{item.rank}
-              </span>
-
-              <h3 className="mt-2 font-semibold">{item.title}</h3>
-
-              <p className="text-sm text-gray-400 mt-2 line-clamp-3">
-                {item.desc}
-              </p>
-
-              <div className="mt-3 text-sm text-blue-400 cursor-pointer hover:underline">
-                Calificar
+      <div className="grid gap-4 md:grid-cols-3">
+        {top.slice(0, 3).map((item, idx) => {
+          const poster = item.poster_path
+            ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+            : null;
+          return (
+            <Link
+              key={item.id}
+              href={`/peli/${item.id}`}
+              className="grid grid-cols-[88px_1fr] gap-4 rounded-xl border border-white/10 bg-zinc-900 p-3 transition hover:bg-zinc-800"
+            >
+              <div className="relative h-[132px] w-[88px] overflow-hidden rounded-lg bg-zinc-800">
+                {poster ? (
+                  <Image src={poster} alt={item.title} fill sizes="88px" className="object-cover" />
+                ) : null}
               </div>
-            </div>
-          </div>
-        ))}
+              <div>
+                <span className="rounded bg-blue-600 px-2 py-1 text-xs font-bold">#{idx + 1}</span>
+                <h3 className="mt-2 line-clamp-2 font-semibold">{item.title}</h3>
+                <p className="mt-2 line-clamp-3 text-sm text-gray-400">{item.overview || "Sin descripcion"}</p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Grid 4–10 */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
-        {top10.slice(3).map((item) => (
-          <div
-            key={item.rank}
-            className="bg-zinc-900 rounded-lg p-2 hover:bg-zinc-800 transition"
-          >
-            {/* Poster fake */}
-            <div className="relative w-full h-40 rounded-md bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-xl font-bold">
-              {item.rank}
-
-              {/* rank badge */}
-              <span className="absolute top-1 left-1 bg-blue-600 text-xs px-2 py-0.5 rounded">
-                #{item.rank}
-              </span>
-            </div>
-
-            <p className="text-xs mt-2 text-center">{item.title}</p>
-          </div>
-        ))}
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-7">
+        {top.slice(3).map((item, i) => {
+          const poster = item.poster_path
+            ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+            : null;
+          const rank = i + 4;
+          return (
+            <Link
+              key={item.id}
+              href={`/peli/${item.id}`}
+              className="rounded-lg border border-white/10 bg-zinc-900 p-2 transition hover:bg-zinc-800"
+            >
+              <div className="relative h-40 w-full overflow-hidden rounded-md bg-zinc-800">
+                {poster ? (
+                  <Image src={poster} alt={item.title} fill sizes="160px" className="object-cover" />
+                ) : null}
+                <span className="absolute left-1 top-1 rounded bg-blue-600 px-2 py-0.5 text-xs font-bold">#{rank}</span>
+              </div>
+              <p className="mt-2 line-clamp-2 text-center text-xs">{item.title}</p>
+            </Link>
+          );
+        })}
       </div>
-
-      {/* Botón */}
-      <div className="flex justify-center mt-8">
-        <button className="bg-zinc-800 hover:bg-zinc-700 px-6 py-2 rounded-full text-sm">
-          Ver todo
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }
+

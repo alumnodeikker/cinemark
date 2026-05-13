@@ -1,6 +1,7 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import BotonFavorito from "@/components/BotonFavorito";
+import BotonFavoritoActor from "@/components/BotonFavoritoActor";
 import { buildYoutubeEmbedUrl, fetchPeli } from "@/lib/Api_";
 
 function pickYoutubeTrailer(videos = []) {
@@ -72,7 +73,6 @@ export default async function FichaPelicula({ params }) {
   const trailer = pickYoutubeTrailer(peli?.videos?.results);
   const trailerUrl = buildYoutubeEmbedUrl(trailer?.key);
   const year = peli.release_date?.split("-")?.[0] ?? "N/D";
-  const match = Math.round((peli.vote_average ?? 0) * 10);
   const runtime = formatRuntime(peli.runtime);
   const genresList = peli.genres?.map((genre) => genre.name) ?? [];
   const genres = genresList.join(", ") || "N/D";
@@ -98,6 +98,16 @@ export default async function FichaPelicula({ params }) {
       }).format(peli.vote_count)
     : "0";
   const popularity = Math.round(peli.popularity ?? 0);
+  const originalTitle = peli.original_title || "N/D";
+  const spokenLanguages =
+    peli.spoken_languages?.map((item) => item.english_name || item.name).filter(Boolean).join(", ") ||
+    "N/D";
+  const trivia = [
+    `Tiene ${voteCount} votos registrados en TMDB.`,
+    `Ranking de popularidad actual: ${popularity}.`,
+    `Duracion total: ${runtime}.`,
+    `Se estreno el ${peli.release_date || "N/D"}.`,
+  ];
 
   const posterUrl = peli.poster_path
     ? `https://image.tmdb.org/t/p/w500${peli.poster_path}`
@@ -349,8 +359,16 @@ export default async function FichaPelicula({ params }) {
               </dd>
             </div>
             <div>
+              <dt className="text-white/60">Titulo original</dt>
+              <dd className="font-semibold">{originalTitle}</dd>
+            </div>
+            <div>
               <dt className="text-white/60">Estado</dt>
               <dd className="font-semibold">{peli.status || "N/D"}</dd>
+            </div>
+            <div>
+              <dt className="text-white/60">Idiomas hablados</dt>
+              <dd className="font-semibold">{spokenLanguages}</dd>
             </div>
             <div>
               <dt className="text-white/60">Presupuesto</dt>
@@ -365,6 +383,17 @@ export default async function FichaPelicula({ params }) {
               <dd className="font-semibold">{companies}</dd>
             </div>
           </dl>
+
+          <div className="mt-6 rounded-xl border border-blue-300/20 bg-blue-500/10 p-4">
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-blue-200">
+              Trivia y datos curiosos
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm text-white/85">
+              {trivia.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </article>
 
         <article id="cast" className="netflix-panel p-4 sm:p-5">
@@ -391,7 +420,7 @@ export default async function FichaPelicula({ params }) {
                     key={`${actor.id}-${actor.cast_id}`}
                     className="group flex items-center gap-4 rounded-[1.4rem] border border-white/8 bg-white/4 px-3 py-3 transition hover:border-blue-300/25 hover:bg-white/7"
                   >
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800 sm:h-24 sm:w-24">
+                    <Link href={`/actor/${actor.id}`} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800 sm:h-24 sm:w-24">
                       {profile ? (
                         <Image
                           src={profile}
@@ -405,29 +434,18 @@ export default async function FichaPelicula({ params }) {
                           Sin foto
                         </div>
                       )}
-                    </div>
+                    </Link>
 
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-1 text-lg font-bold text-white">
+                      <Link href={`/actor/${actor.id}`} className="line-clamp-1 text-lg font-bold text-white transition hover:text-blue-200">
                         {actor.name}
-                      </p>
+                      </Link>
                       <p className="line-clamp-1 text-base text-white/65">
                         {actor.character || "Sin personaje"}
                       </p>
                     </div>
 
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white/70 transition group-hover:border-blue-300/35 group-hover:text-blue-200">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="h-4 w-4"
-                      >
-                        <path d="M12 21s-6.7-4.35-9.33-8.08C.93 10.43 2.3 6.5 5.93 5.2c2.28-.82 4.3.04 6.07 2.1 1.77-2.06 3.8-2.92 6.07-2.1 3.63 1.3 5 5.23 3.26 7.72C18.7 16.65 12 21 12 21Z" />
-                      </svg>
-                    </div>
+                    <BotonFavoritoActor persona={actor} />
                   </div>
                 );
               })}
@@ -510,3 +528,4 @@ export default async function FichaPelicula({ params }) {
     </main>
   );
 }
+

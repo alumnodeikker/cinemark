@@ -1,15 +1,25 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
-import { traerPeliculas } from "../lib/Api_";
+import {
+  traerCelebridadesPopulares,
+  traerPeliculas,
+  traerPeliculasRecientes,
+  traerTopSemanal,
+} from "../lib/Api_";
 import TarjetaPeli from "./TarjetaPeli";
 import FeaturedHero from "./FeaturedHero";
 import CelebrityCarousel from "./CelebrityCarousel";
 import Top10Grid from "./Top10Grid";
 
 export default async function ContenedorPelisFamosas() {
-  const peliculas = await traerPeliculas();
+  const [peliculas, recientesApi, celebridades, topSemanal] = await Promise.all([
+    traerPeliculas(),
+    traerPeliculasRecientes(),
+    traerCelebridadesPopulares(),
+    traerTopSemanal(),
+  ]);
   const destacada = peliculas?.[0] ?? null;
-  const recientes = peliculas.slice(0, 10);
+  const recientes = recientesApi.length ? recientesApi.slice(0, 10) : peliculas.slice(0, 10);
   const populares = peliculas.slice(10, 20).length
     ? peliculas.slice(10, 20)
     : peliculas.slice(0, 10);
@@ -71,7 +81,7 @@ export default async function ContenedorPelisFamosas() {
         </div>
       </article>
 
-      <FeaturedHero />
+      <FeaturedHero principales={recientes.slice(0, 4)} />
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
@@ -93,7 +103,7 @@ export default async function ContenedorPelisFamosas() {
         </div>
       </section>
 
-      <CelebrityCarousel />
+      <CelebrityCarousel celebridades={celebridades} />
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
@@ -115,7 +125,8 @@ export default async function ContenedorPelisFamosas() {
         </div>
       </section>
 
-      <Top10Grid />
+      <Top10Grid peliculas={topSemanal} />
     </section>
   );
 }
+
