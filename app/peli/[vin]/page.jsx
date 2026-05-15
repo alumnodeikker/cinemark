@@ -72,9 +72,6 @@ export default async function FichaPelicula({ params }) {
 
   const trailer = pickYoutubeTrailer(peli?.videos?.results);
   const trailerUrl = buildYoutubeEmbedUrl(trailer?.key);
-  const trailerWatchUrl = trailer?.key
-    ? `https://www.youtube.com/watch?v=${trailer.key}`
-    : null;
   const year = peli.release_date?.split("-")?.[0] ?? "N/D";
   const runtime = formatRuntime(peli.runtime);
   const genresList = peli.genres?.map((genre) => genre.name) ?? [];
@@ -243,21 +240,6 @@ export default async function FichaPelicula({ params }) {
                     />
                   </div>
                   <div className="flex flex-col gap-4 border-t border-white/10 bg-black/55 p-5 sm:p-6">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-white/80">
-                        {trailer?.name || `Trailer de ${peli.title}`}
-                      </p>
-                      {trailerWatchUrl ? (
-                        <a
-                          href={trailerWatchUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-sm border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-amber-300 hover:text-amber-300"
-                        >
-                          Abrir en YouTube
-                        </a>
-                      ) : null}
-                    </div>
                     <div className="flex flex-wrap gap-2">
                       {genresList.slice(0, 6).map((genre) => (
                         <span
