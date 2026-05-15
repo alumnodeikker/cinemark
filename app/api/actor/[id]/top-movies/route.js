@@ -1,4 +1,4 @@
-﻿import { fetchActor } from "@/lib/Api_";
+﻿import { getActor } from "@/lib/tmdb";
 
 function sortByPopularity(items = []) {
   return [...items].sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
@@ -12,7 +12,7 @@ export async function GET(_request, { params }) {
   }
 
   try {
-    const actor = await fetchActor(id);
+    const actor = await getActor(id);
     const movies = sortByPopularity(actor?.movie_credits?.cast ?? [])
       .slice(0, 3)
       .map((movie) => ({

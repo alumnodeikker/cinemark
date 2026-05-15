@@ -1,15 +1,55 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
-import BotonFavoritoActor from "@/components/BotonFavoritoActor";
-import { fetchActor } from "@/lib/Api_";
+import FavoriteActorButton from "@/components/movie/FavoriteActorButton";
+import { getActor } from "@/lib/tmdb";
+import { absoluteUrl, compactDescription, tmdbImage } from "@/lib/seo";
 
 function sortByPopularity(items = []) {
   return [...items].sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
 }
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const actor = await getActor(id);
+
+  if (!actor?.id) {
+    return {
+      title: "Actor no encontrado",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const description = compactDescription(
+    actor.biography,
+    `Perfil de ${actor.name}, peliculas destacadas, popularidad y biografia.`
+  );
+  const image = tmdbImage(actor.profile_path, "w500");
+
+  return {
+    title: actor.name,
+    description,
+    alternates: {
+      canonical: absoluteUrl(`/actor/${actor.id}`),
+    },
+    openGraph: {
+      type: "profile",
+      title: actor.name,
+      description,
+      url: absoluteUrl(`/actor/${actor.id}`),
+      images: image ? [{ url: image, alt: actor.name }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: actor.name,
+      description,
+      images: image ? [image] : [],
+    },
+  };
+}
+
 export default async function ActorPage({ params }) {
   const { id } = await params;
-  const actor = await fetchActor(id);
+  const actor = await getActor(id);
 
   if (!actor?.id) {
     return <main className="netflix-panel p-8">No se pudo cargar el actor.</main>;
@@ -33,7 +73,7 @@ export default async function ActorPage({ params }) {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl font-black sm:text-4xl">{actor.name}</h1>
-            <BotonFavoritoActor persona={actor} />
+            <FavoriteActorButton persona={actor} />
           </div>
           <p className="text-sm text-white/70">
             Popularidad: <span className="font-semibold text-white">{Math.round(actor.popularity ?? 0)}</span>
@@ -88,4 +128,3 @@ export default async function ActorPage({ params }) {
     </main>
   );
 }
-

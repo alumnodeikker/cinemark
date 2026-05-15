@@ -2,25 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useMovieStore } from "@/stores/movieStore";
 
-const STORAGE_KEY = "favoritos_actores";
-
-function leerFavoritos() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-export default function ContenedorActoresFavoritos() {
-  const actores = useMemo(() => {
-    if (typeof window === "undefined") return [];
-    return leerFavoritos();
-  }, []);
+export default function FavoriteActors() {
+  const actores = useMovieStore((state) => state.favoriteActors);
   const [topPeliculas, setTopPeliculas] = useState({});
 
   useEffect(() => {

@@ -1,25 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import TarjetaPeli from "./TarjetaPeli";
+import { useMovieStore } from "@/stores/movieStore";
+import MovieCard from "@/components/movie/MovieCard";
 
-const STORAGE_KEY = "favoritos";
-
-function leerFavoritos() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-export default function ContenedorFavoritas() {
-  const [favoritas, setFavoritas] = useState(() => {
-    if (typeof window === "undefined") return [];
-    return leerFavoritos();
-  });
+export default function FavoriteMovies() {
+  const favoritas = useMovieStore((state) => state.favorites);
 
   return (
     <section className="space-y-6">
@@ -34,18 +19,13 @@ export default function ContenedorFavoritas() {
         ) : (
           favoritas.map((peli) => (
             <div key={peli.id} className="fade-up">
-              <TarjetaPeli
+              <MovieCard
                 id={peli.id}
                 titulo={peli.title}
                 descripcion={peli.overview}
                 rating={peli.vote_average}
                 imagenPath={peli.poster_path}
                 pelicula={peli}
-                onFavoritoChange={(nuevoEstado) => {
-                  if (!nuevoEstado) {
-                    setFavoritas((prev) => prev.filter((p) => p.id !== peli.id));
-                  }
-                }}
                 modo="grid"
               />
             </div>

@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import BotonFavorito from "./BotonFavorito";
+import FavoriteMovieButton from "@/components/movie/FavoriteMovieButton";
 
 function formatearRating(rating = 0) {
   return Math.round(rating * 10) / 10;
 }
 
-export default function TarjetaPeli({
+export default function MovieCard({
   id = null,
   titulo = "Peli",
   descripcion = "Descripcion",
@@ -90,7 +90,7 @@ export default function TarjetaPeli({
                   Favoritos
                 </p>
                 <div className="mt-1 flex justify-center">
-                  <BotonFavorito
+                  <FavoriteMovieButton
                     key={`hero-${peliculaData?.id ?? id}`}
                     pelicula={peliculaData}
                     onChange={onFavoritoChange}
@@ -224,7 +224,7 @@ export default function TarjetaPeli({
             {ratingLabel}/10
           </span>
 
-          <BotonFavorito
+          <FavoriteMovieButton
             key={peliculaData?.id ?? id}
             pelicula={peliculaData}
             onChange={onFavoritoChange}

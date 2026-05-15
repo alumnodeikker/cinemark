@@ -1,4 +1,13 @@
-﻿import ContenedorActoresFavoritos from "@/components/ContenedorActoresFavoritos";
+﻿import FavoriteActors from "@/components/favorites/FavoriteActors";
+
+export const metadata = {
+  title: "Mis actores favoritos",
+  description: "Tu lista local de actores favoritos.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function MisActoresPage() {
   return (
@@ -14,8 +23,7 @@ export default function MisActoresPage() {
           Sigue a tus actores favoritos y explora en que peliculas aparecen.
         </p>
       </section>
-      <ContenedorActoresFavoritos />
+      <FavoriteActors />
     </main>
   );
 }
-

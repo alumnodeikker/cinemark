@@ -1,12 +1,21 @@
-import ContenedorBusqueda from "@/components/ContenedorBusqueda";
-import { fetchBusqueda } from "@/lib/Api_";
-import TarjetaPeli from "@/components/TarjetaPeli";
+import SearchIntro from "@/components/search/SearchIntro";
+import { searchMovies } from "@/lib/tmdb";
+import MovieCard from "@/components/movie/MovieCard";
 import Image from "next/image";
+
+export const metadata = {
+  title: "Buscar peliculas",
+  description: "Busca peliculas por titulo y abre su ficha con trailer, elenco e imagenes.",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default async function Buscar({ searchParams }) {
   const { q } = await searchParams;
   const termino = Array.isArray(q) ? q[0] : q;
-  const data = termino ? await fetchBusqueda(termino) : null;
+  const data = termino ? await searchMovies(termino) : null;
   const resultados = data?.results ?? [];
   const fondo = resultados[0]?.backdrop_path
     ? `https://image.tmdb.org/t/p/original${resultados[0].backdrop_path}`
@@ -32,7 +41,7 @@ export default async function Buscar({ searchParams }) {
         </section>
       )}
 
-      <ContenedorBusqueda />
+      <SearchIntro />
       {termino ? (
         <>
           {resultados.length > 0 && (
@@ -43,7 +52,7 @@ export default async function Buscar({ searchParams }) {
               <div className="movie-grid">
               {resultados.map((p) => (
                 <div key={p.id} className="fade-up">
-                  <TarjetaPeli
+                  <MovieCard
                     id={p.id}
                     titulo={p.title}
                     descripcion={p.overview}

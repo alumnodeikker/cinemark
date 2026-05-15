@@ -1,4 +1,13 @@
-import ContenedorFavoritas from "@/components/ContenedorFavoritas";
+import FavoriteMovies from "@/components/favorites/FavoriteMovies";
+
+export const metadata = {
+  title: "Mis favoritos",
+  description: "Tu lista local de peliculas favoritas.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function Mis_favo() {
   return (
@@ -14,7 +23,7 @@ export default function Mis_favo() {
           Guarda peliculas y abre su ficha completa con reparto y trailer.
         </p>
       </section>
-      <ContenedorFavoritas />
+      <FavoriteMovies />
     </main>
   );
 }

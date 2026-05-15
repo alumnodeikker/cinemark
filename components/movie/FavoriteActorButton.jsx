@@ -1,0 +1,33 @@
+"use client";
+
+import { useMovieStore } from "@/stores/movieStore";
+
+export default function FavoriteActorButton({ persona = null, className = "" }) {
+  const toggleFavoriteActor = useMovieStore((state) => state.toggleFavoriteActor);
+  const favorito = useMovieStore((state) =>
+    persona?.id ? state.favoriteActors.some((p) => p.id === persona.id) : false
+  );
+
+  const toggleFavorito = () => {
+    if (!persona?.id) return;
+    toggleFavoriteActor(persona);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggleFavorito}
+      aria-pressed={favorito}
+      aria-label={favorito ? "Quitar actor de favoritos" : "Agregar actor a favoritos"}
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/35 ${className}`}
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill={favorito ? "currentColor" : "none"} stroke="currentColor">
+        <path
+          d="m12 20-1.2-1C6.2 15 3 12.2 3 8.8 3 6.2 5.1 4 7.7 4c1.5 0 3 .8 3.8 2 .8-1.2 2.3-2 3.8-2C17.9 4 20 6.2 20 8.8c0 3.4-3.2 6.2-7.8 10.2z"
+          strokeWidth="1.7"
+          className={favorito ? "text-blue-300" : "text-white/75"}
+        />
+      </svg>
+    </button>
+  );
+}

@@ -1,22 +1,25 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 import {
-  traerCelebridadesPopulares,
-  traerPeliculas,
-  traerPeliculasRecientes,
-  traerTopSemanal,
-} from "../lib/Api_";
-import TarjetaPeli from "./TarjetaPeli";
-import FeaturedHero from "./FeaturedHero";
-import CelebrityCarousel from "./CelebrityCarousel";
-import Top10Grid from "./Top10Grid";
+  getNowPlayingMovies,
+  getPopularMovies,
+  getPopularPeople,
+  getUpcomingMoviesWithTrailers,
+  getWeeklyTopMovies,
+} from "@/lib/tmdb";
+import MovieCard from "@/components/movie/MovieCard";
+import FeaturedHero from "@/components/home/FeaturedHero";
+import CelebrityCarousel from "@/components/home/CelebrityCarousel";
+import Top10Grid from "@/components/home/Top10Grid";
+import UpcomingTrailers from "@/components/home/UpcomingTrailers";
 
-export default async function ContenedorPelisFamosas() {
-  const [peliculas, recientesApi, celebridades, topSemanal] = await Promise.all([
-    traerPeliculas(),
-    traerPeliculasRecientes(),
-    traerCelebridadesPopulares(),
-    traerTopSemanal(),
+export default async function HomeMovies() {
+  const [peliculas, recientesApi, celebridades, topSemanal, proximosEstrenos] = await Promise.all([
+    getPopularMovies(),
+    getNowPlayingMovies(),
+    getPopularPeople(),
+    getWeeklyTopMovies(),
+    getUpcomingMoviesWithTrailers(),
   ]);
   const destacada = peliculas?.[0] ?? null;
   const recientes = recientesApi.length ? recientesApi.slice(0, 10) : peliculas.slice(0, 10);
@@ -83,13 +86,15 @@ export default async function ContenedorPelisFamosas() {
 
       <FeaturedHero principales={recientes.slice(0, 4)} />
 
+      <UpcomingTrailers peliculas={proximosEstrenos} />
+
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
           Tendencias ahora
         </h2>
         <div className="poster-rail">
           {recientes.map((peli) => (
-            <TarjetaPeli
+            <MovieCard
               key={peli.id}
               id={peli.id}
               titulo={peli.title}
@@ -111,7 +116,7 @@ export default async function ContenedorPelisFamosas() {
         </h2>
         <div className="poster-rail">
           {populares.map((peli) => (
-            <TarjetaPeli
+            <MovieCard
               key={peli.id}
               id={peli.id}
               titulo={peli.title}
@@ -129,4 +134,3 @@ export default async function ContenedorPelisFamosas() {
     </section>
   );
 }
-

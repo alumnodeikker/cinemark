@@ -1,8 +1,10 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
-import BotonFavorito from "@/components/BotonFavorito";
-import BotonFavoritoActor from "@/components/BotonFavoritoActor";
-import { buildYoutubeEmbedUrl, fetchPeli } from "@/lib/Api_";
+import FavoriteMovieButton from "@/components/movie/FavoriteMovieButton";
+import FavoriteActorButton from "@/components/movie/FavoriteActorButton";
+import MoviePhotoGallery from "@/components/movie/MoviePhotoGallery";
+import { buildYoutubeEmbedUrl, getMovie } from "@/lib/tmdb";
+import { absoluteUrl, compactDescription, tmdbImage } from "@/lib/seo";
 
 function pickYoutubeTrailer(videos = []) {
   if (!Array.isArray(videos) || videos.length === 0) return null;
@@ -58,9 +60,48 @@ function formatRating(value) {
   return Number(value).toFixed(1);
 }
 
+export async function generateMetadata({ params }) {
+  const { vin } = await params;
+  const peli = await getMovie(vin);
+
+  if (!peli?.id) {
+    return {
+      title: "Pelicula no encontrada",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = peli.release_date
+    ? `${peli.title} (${peli.release_date.split("-")[0]})`
+    : peli.title;
+  const description = compactDescription(peli.overview, `Ficha de ${peli.title} con trailer, elenco e imagenes.`);
+  const image = tmdbImage(peli.backdrop_path || peli.poster_path, "w780");
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: absoluteUrl(`/peli/${peli.id}`),
+    },
+    openGraph: {
+      type: "video.movie",
+      title,
+      description,
+      url: absoluteUrl(`/peli/${peli.id}`),
+      images: image ? [{ url: image, alt: peli.title }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : [],
+    },
+  };
+}
+
 export default async function FichaPelicula({ params }) {
   const { vin } = await params;
-  const peli = await fetchPeli(vin);
+  const peli = await getMovie(vin);
 
   if (!peli?.id) {
     return (
@@ -189,7 +230,7 @@ export default async function FichaPelicula({ params }) {
                 </p>
                 <div className="mt-1 flex items-center gap-2">
                   <div className="flex justify-center">
-                    <BotonFavorito pelicula={peliculaFavorita} />
+                    <FavoriteMovieButton pelicula={peliculaFavorita} />
                   </div>
                   <span className="text-sm font-semibold text-blue-300">Calificar</span>
                 </div>
@@ -396,7 +437,7 @@ export default async function FichaPelicula({ params }) {
           </div>
         </article>
 
-        <article id="cast" className="netflix-panel p-4 sm:p-5">
+        <article id="cast" className="netflix-panel p-4 sm:p-5 lg:col-span-2">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="h-7 w-1 rounded-full bg-amber-400" />
@@ -409,44 +450,60 @@ export default async function FichaPelicula({ params }) {
           </div>
 
           {cast.length > 0 ? (
-            <div className="mt-6 grid gap-x-8 gap-y-5 md:grid-cols-2">
-              {cast.map((actor) => {
+            <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {cast.map((actor, index) => {
                 const profile = actor.profile_path
-                  ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+                  ? `https://image.tmdb.org/t/p/w342${actor.profile_path}`
                   : null;
 
                 return (
-                  <div
+                  <article
                     key={`${actor.id}-${actor.cast_id}`}
-                    className="group flex items-center gap-4 rounded-[1.4rem] border border-white/8 bg-white/4 px-3 py-3 transition hover:border-blue-300/25 hover:bg-white/7"
+                    className="group min-w-0 text-center"
                   >
-                    <Link href={`/actor/${actor.id}`} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800 sm:h-24 sm:w-24">
-                      {profile ? (
-                        <Image
-                          src={profile}
-                          alt={actor.name}
-                          fill
-                          sizes="96px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-[11px] text-white/55">
-                          Sin foto
+                    <div className="relative mx-auto h-[132px] w-[132px] sm:h-[150px] sm:w-[150px]">
+                      <Link
+                        href={`/actor/${actor.id}`}
+                        className="block h-full w-full"
+                        aria-label={`Ver perfil de ${actor.name}`}
+                      >
+                        <div className="relative h-full w-full overflow-hidden rounded-full bg-zinc-900 ring-1 ring-white/10 transition group-hover:ring-amber-300/55">
+                          {profile ? (
+                            <Image
+                              src={profile}
+                              alt={actor.name}
+                              fill
+                              sizes="(max-width: 640px) 132px, 150px"
+                              className="object-cover transition duration-300 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-4xl font-black text-amber-300">
+                              {actor.name?.charAt(0) ?? "?"}
+                            </div>
+                          )}
+                          <div className="absolute inset-x-5 bottom-0 h-12 bg-gradient-to-t from-black/60 to-transparent" />
                         </div>
-                      )}
-                    </Link>
-
-                    <div className="min-w-0 flex-1">
-                      <Link href={`/actor/${actor.id}`} className="line-clamp-1 text-lg font-bold text-white transition hover:text-blue-200">
-                        {actor.name}
                       </Link>
-                      <p className="line-clamp-1 text-base text-white/65">
-                        {actor.character || "Sin personaje"}
-                      </p>
+
+                      <FavoriteActorButton
+                        persona={actor}
+                        className="absolute bottom-0 right-0 bg-black/75 text-white shadow-lg shadow-black/40 backdrop-blur transition hover:bg-black"
+                      />
                     </div>
 
-                    <BotonFavoritoActor persona={actor} />
-                  </div>
+                    <Link href={`/actor/${actor.id}`} className="mx-auto mt-3 block max-w-[190px]">
+                      <p className="line-clamp-2 min-h-[2.5rem] text-base font-bold leading-tight text-white transition group-hover:text-amber-200">
+                        {actor.name}
+                      </p>
+                      <p className="mt-1 line-clamp-1 text-sm font-semibold text-white/62">
+                        {actor.character || "Sin personaje"}
+                      </p>
+                      <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-amber-300">
+                        #{index + 1} reparto
+                        {actor.popularity ? ` · ${Math.round(actor.popularity)}` : ""}
+                      </p>
+                    </Link>
+                  </article>
                 );
               })}
             </div>
@@ -471,61 +528,14 @@ export default async function FichaPelicula({ params }) {
             <span className="text-sm font-medium text-blue-300">Agregar foto</span>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12">
-            {galleryImages.map((image, index) => {
-              const imageUrl = image.file_path
-                ? `https://image.tmdb.org/t/p/w780${image.file_path}`
-                : null;
-
-              if (!imageUrl) return null;
-
-              const spanClass =
-                index === 0
-                  ? "xl:col-span-5"
-                  : index === 1
-                    ? "xl:col-span-3"
-                    : index === 2
-                      ? "xl:col-span-4"
-                      : index === 3
-                        ? "xl:col-span-3"
-                        : index === 4
-                          ? "xl:col-span-3"
-                          : index === 5
-                            ? "xl:col-span-4"
-                            : "xl:col-span-2";
-
-              const showRemaining = index === galleryImages.length - 1 && galleryRemaining > 0;
-
-              return (
-                <div
-                  key={`${image.file_path}-${index}`}
-                  className={`group relative overflow-hidden rounded-[1.35rem] border border-white/10 bg-black/30 ${spanClass}`}
-                >
-                  <div className="relative aspect-[16/9]">
-                    <Image
-                      src={imageUrl}
-                      alt={`Imagen ${index + 1} de ${peli.title}`}
-                      fill
-                      sizes="(max-width: 1280px) 100vw, 33vw"
-                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-                    {showRemaining && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/55">
-                        <span className="text-3xl font-black text-white">
-                          +{galleryRemaining}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <MoviePhotoGallery
+            images={galleryImages}
+            title={peli.title}
+            remaining={galleryRemaining}
+          />
         </section>
       )}
 
     </main>
   );
 }
-

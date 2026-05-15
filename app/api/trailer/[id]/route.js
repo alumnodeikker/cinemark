@@ -1,4 +1,4 @@
-import { fetchTrailerKey } from "@/lib/Api_";
+import { fetchTrailerKey } from "@/lib/tmdb";
 
 export async function GET(_request, { params }) {
   const { id } = await params;
