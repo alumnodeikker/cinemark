@@ -1,46 +1,24 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useLocalStorageList, writeList } from "@/lib/useLocalStorageList";
 
 const STORAGE_KEY = "favoritos_actores";
 
-function leerFavoritos() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-function guardarFavoritos(lista) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-  } catch {
-    // noop
-  }
-}
-
-function esFavorito(idActor) {
-  if (!idActor) return false;
-  return leerFavoritos().some((p) => p.id === idActor);
-}
-
-export default function BotonFavoritoActor({ persona = null }) {
-  const [favorito, setFavorito] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return esFavorito(persona?.id);
-  });
+export default function BotonFavoritoActor({ persona = null, className = "" }) {
+  const actoresFavoritos = useLocalStorageList(STORAGE_KEY);
+  const favorito = Boolean(
+    persona?.id && actoresFavoritos.some((p) => p.id === persona.id)
+  );
 
   const toggleFavorito = () => {
     if (!persona?.id) return;
-    const lista = leerFavoritos();
-    const existe = lista.some((p) => p.id === persona.id);
+    const existe = actoresFavoritos.some((p) => p.id === persona.id);
 
     if (existe) {
-      guardarFavoritos(lista.filter((p) => p.id !== persona.id));
-      setFavorito(false);
+      writeList(
+        STORAGE_KEY,
+        actoresFavoritos.filter((p) => p.id !== persona.id)
+      );
       return;
     }
 
@@ -51,8 +29,7 @@ export default function BotonFavoritoActor({ persona = null }) {
       popularity: persona.popularity ?? 0,
     };
 
-    guardarFavoritos([...lista, item]);
-    setFavorito(true);
+    writeList(STORAGE_KEY, [...actoresFavoritos, item]);
   };
 
   return (
@@ -61,7 +38,7 @@ export default function BotonFavoritoActor({ persona = null }) {
       onClick={toggleFavorito}
       aria-pressed={favorito}
       aria-label={favorito ? "Quitar actor de favoritos" : "Agregar actor a favoritos"}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/35"
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/35 ${className}`}
     >
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill={favorito ? "currentColor" : "none"} stroke="currentColor">
         <path
@@ -73,4 +50,3 @@ export default function BotonFavoritoActor({ persona = null }) {
     </button>
   );
 }
-

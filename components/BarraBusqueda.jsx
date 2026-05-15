@@ -1,16 +1,15 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef } from "react";
 
 export default function BarraBusqueda() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // Inicializar el input con lo que ya hay en la URL
-  const [texto, setTexto] = useState(searchParams.get("q") ?? "");
+  const inputRef = useRef(null);
 
   function buscar() {
+    const texto = inputRef.current?.value ?? "";
     if (!texto.trim()) return;
 
     const params = new URLSearchParams(searchParams);
@@ -22,10 +21,9 @@ export default function BarraBusqueda() {
     <div className="w-full max-w-3xl">
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Busca titulos, directores o sagas..."
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && buscar()}
           className="h-12 w-full rounded-sm border border-white/25 bg-black/65 px-4 pr-28 text-sm text-white placeholder:text-white/45 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
         />

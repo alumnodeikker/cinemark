@@ -1,49 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useLocalStorageList, writeList } from "@/lib/useLocalStorageList";
 
 const STORAGE_KEY = "favoritos";
 
-function leerFavoritos() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-function guardarFavoritos(lista) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
-  } catch {
-    // Ignorar errores de storage
-  }
-}
-
-function esFavorita(idPelicula) {
-  if (!idPelicula) return false;
-  const lista = leerFavoritos();
-  return lista.some((p) => p.id === idPelicula);
-}
-
 export default function BotonFavorito({ pelicula = null, onChange = null }) {
-  const [favorito, setFavorito] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return esFavorita(pelicula?.id);
-  });
+  const favoritas = useLocalStorageList(STORAGE_KEY);
+  const favorito = Boolean(
+    pelicula?.id && favoritas.some((p) => p.id === pelicula.id)
+  );
 
   const toggleFavorito = () => {
     if (!pelicula?.id) return;
-    const lista = leerFavoritos();
-    const existe = lista.some((p) => p.id === pelicula.id);
+    const existe = favoritas.some((p) => p.id === pelicula.id);
 
     let nuevaLista;
     let nuevoEstado;
 
     if (existe) {
-      nuevaLista = lista.filter((p) => p.id !== pelicula.id);
+      nuevaLista = favoritas.filter((p) => p.id !== pelicula.id);
       nuevoEstado = false;
     } else {
       const item = {
@@ -53,12 +28,11 @@ export default function BotonFavorito({ pelicula = null, onChange = null }) {
         vote_average: pelicula.vote_average ?? 0,
         poster_path: pelicula.poster_path ?? null,
       };
-      nuevaLista = [...lista, item];
+      nuevaLista = [...favoritas, item];
       nuevoEstado = true;
     }
 
-    guardarFavoritos(nuevaLista);
-    setFavorito(nuevoEstado);
+    writeList(STORAGE_KEY, nuevaLista);
     if (onChange) onChange(nuevoEstado);
   };
 

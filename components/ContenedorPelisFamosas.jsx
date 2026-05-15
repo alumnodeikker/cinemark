@@ -4,19 +4,22 @@ import {
   traerCelebridadesPopulares,
   traerPeliculas,
   traerPeliculasRecientes,
+  traerProximosEstrenos,
   traerTopSemanal,
 } from "../lib/Api_";
 import TarjetaPeli from "./TarjetaPeli";
 import FeaturedHero from "./FeaturedHero";
 import CelebrityCarousel from "./CelebrityCarousel";
 import Top10Grid from "./Top10Grid";
+import ProximosEstrenosTrailers from "./ProximosEstrenosTrailers";
 
 export default async function ContenedorPelisFamosas() {
-  const [peliculas, recientesApi, celebridades, topSemanal] = await Promise.all([
+  const [peliculas, recientesApi, celebridades, topSemanal, proximosEstrenos] = await Promise.all([
     traerPeliculas(),
     traerPeliculasRecientes(),
     traerCelebridadesPopulares(),
     traerTopSemanal(),
+    traerProximosEstrenos(),
   ]);
   const destacada = peliculas?.[0] ?? null;
   const recientes = recientesApi.length ? recientesApi.slice(0, 10) : peliculas.slice(0, 10);
@@ -82,6 +85,8 @@ export default async function ContenedorPelisFamosas() {
       </article>
 
       <FeaturedHero principales={recientes.slice(0, 4)} />
+
+      <ProximosEstrenosTrailers peliculas={proximosEstrenos} />
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">

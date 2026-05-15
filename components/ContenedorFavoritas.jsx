@@ -1,25 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useLocalStorageList } from "@/lib/useLocalStorageList";
 import TarjetaPeli from "./TarjetaPeli";
 
 const STORAGE_KEY = "favoritos";
 
-function leerFavoritos() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
 export default function ContenedorFavoritas() {
-  const [favoritas, setFavoritas] = useState(() => {
-    if (typeof window === "undefined") return [];
-    return leerFavoritos();
-  });
+  const favoritas = useLocalStorageList(STORAGE_KEY);
 
   return (
     <section className="space-y-6">
@@ -41,11 +28,6 @@ export default function ContenedorFavoritas() {
                 rating={peli.vote_average}
                 imagenPath={peli.poster_path}
                 pelicula={peli}
-                onFavoritoChange={(nuevoEstado) => {
-                  if (!nuevoEstado) {
-                    setFavoritas((prev) => prev.filter((p) => p.id !== peli.id));
-                  }
-                }}
                 modo="grid"
               />
             </div>
