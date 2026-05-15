@@ -2,6 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Create a local environment file with your TMDB read access token:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` and replace `tu_token_de_lectura_de_tmdb` with the
+**API Read Access Token** from your TMDB account:
+
+```txt
+TMDB_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiJ9...
+```
+
+Keep this variable without the `NEXT_PUBLIC_` prefix so it stays on the server.
+Restart the dev server after changing `.env.local`.
+
 First, run the development server:
 
 ```bash
