@@ -1,18 +1,28 @@
-﻿import { getActor } from "@/lib/tmdb";
+import {
+  parseTmdbId,
+  protectedJson,
+  rejectCrossSiteRequest,
+  rejectIfRateLimited,
+} from "@/lib/apiProtection";
+import { getActor } from "@/lib/tmdb";
 
 function sortByPopularity(items = []) {
   return [...items].sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
 }
 
-export async function GET(_request, { params }) {
-  const { id } = await params;
+export async function GET(request, { params }) {
+  const blocked = rejectCrossSiteRequest(request) || rejectIfRateLimited(request, 80);
+  if (blocked) return blocked;
 
-  if (!id || !/^\d+$/.test(id)) {
-    return Response.json({ movies: [] }, { status: 400 });
+  const { id } = await params;
+  const safeId = parseTmdbId(id);
+
+  if (!safeId) {
+    return protectedJson({ movies: [] }, { status: 400 });
   }
 
   try {
-    const actor = await getActor(id);
+    const actor = await getActor(safeId);
     const movies = sortByPopularity(actor?.movie_credits?.cast ?? [])
       .slice(0, 3)
       .map((movie) => ({
@@ -21,15 +31,8 @@ export async function GET(_request, { params }) {
         popularity: Math.round(movie.popularity ?? 0),
       }));
 
-    return Response.json(
-      { movies },
-      {
-        headers: {
-          "Cache-Control": "private, max-age=1800, stale-while-revalidate=3600",
-        },
-      }
-    );
+    return protectedJson({ movies });
   } catch {
-    return Response.json({ movies: [] }, { status: 500 });
+    return protectedJson({ movies: [] }, { status: 500 });
   }
 }

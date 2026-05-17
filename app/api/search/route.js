@@ -1,14 +1,20 @@
 import { searchMovies } from "@/lib/tmdb";
+import {
+  protectedJson,
+  rejectCrossSiteRequest,
+  rejectIfRateLimited,
+  sanitizeSearchQuery,
+} from "@/lib/apiProtection";
 
 export async function GET(request) {
+  const blocked = rejectCrossSiteRequest(request) || rejectIfRateLimited(request, 50);
+  if (blocked) return blocked;
+
   const { searchParams } = new URL(request.url);
-  const q = (searchParams.get("q") ?? "").trim().slice(0, 80);
+  const q = sanitizeSearchQuery(searchParams.get("q"));
 
   if (q.length < 2) {
-    return Response.json(
-      { results: [] },
-      { headers: { "Cache-Control": "private, max-age=60" } }
-    );
+    return protectedJson({ results: [] });
   }
 
   const data = await searchMovies(q);
@@ -23,8 +29,5 @@ export async function GET(request) {
       }))
     : [];
 
-  return Response.json(
-    { results },
-    { headers: { "Cache-Control": "private, max-age=60" } }
-  );
+  return protectedJson({ results });
 }

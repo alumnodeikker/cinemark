@@ -1,3 +1,5 @@
+import path from "node:path";
+
 /** @type {import('next').NextConfig} */
 const securityHeaders = [
   {
@@ -37,6 +39,9 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  turbopack: {
+    root: path.resolve("."),
+  },
   images: {
     remotePatterns: [
       {

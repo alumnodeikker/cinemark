@@ -12,7 +12,7 @@ Then edit `.env.local` and replace `tu_token_de_lectura_de_tmdb` with the
 **API Read Access Token** from your TMDB account:
 
 ```txt
-TMDB_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiJ9...
+TMDB_ACCESS_TOKEN=pon_aqui_tu_token_de_lectura_de_tmdb
 ```
 
 Keep this variable without the `NEXT_PUBLIC_` prefix so it stays on the server.
