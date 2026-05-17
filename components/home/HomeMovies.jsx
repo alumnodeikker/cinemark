@@ -49,7 +49,7 @@ export default async function HomeMovies() {
 
         <div className="relative z-10 flex h-full max-w-xl flex-col justify-end gap-3 px-4 py-6 sm:px-8 sm:py-10">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-300">
-            Serie Pelicula
+            Estreno destacado
           </p>
           <h1 className="text-3xl font-black uppercase leading-tight sm:text-5xl">
             {destacada?.title ?? "Catalogo de Peliculas"}
@@ -90,7 +90,7 @@ export default async function HomeMovies() {
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-          Tendencias ahora
+          Estrenos 2026-2027
         </h2>
         <div className="poster-rail">
           {recientes.map((peli) => (
@@ -112,7 +112,7 @@ export default async function HomeMovies() {
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-          Popular en Cinemark
+          Proximamente en cines
         </h2>
         <div className="poster-rail">
           {populares.map((peli) => (
