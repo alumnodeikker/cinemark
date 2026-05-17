@@ -26,8 +26,9 @@ export default async function HomeMovies() {
   const populares = peliculas.slice(10, 20).length
     ? peliculas.slice(10, 20)
     : peliculas.slice(0, 10);
-  const destacadaBackdrop = destacada?.backdrop_path
-    ? `https://image.tmdb.org/t/p/original${destacada.backdrop_path}`
+  const destacadaImagePath = destacada?.backdrop_path || destacada?.poster_path;
+  const destacadaBackdrop = destacadaImagePath
+    ? `https://image.tmdb.org/t/p/original${destacadaImagePath}`
     : null;
   const ratingMatch = Math.round((destacada?.vote_average ?? 0) * 10);
   const year = destacada?.release_date?.split("-")?.[0] ?? "N/D";
@@ -90,7 +91,7 @@ export default async function HomeMovies() {
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-          Estrenos 2026-2027
+          Estrenos 2026 en Espana
         </h2>
         <div className="poster-rail">
           {recientes.map((peli) => (
