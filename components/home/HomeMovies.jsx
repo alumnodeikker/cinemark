@@ -1,6 +1,7 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 import {
+  getLatestTrailers,
   getNowPlayingMovies,
   getPopularMovies,
   getPopularPeople,
@@ -11,16 +12,19 @@ import MovieCard from "@/components/movie/MovieCard";
 import FeaturedHero from "@/components/home/FeaturedHero";
 import CelebrityCarousel from "@/components/home/CelebrityCarousel";
 import Top10Grid from "@/components/home/Top10Grid";
+import LatestTrailers from "@/components/home/LatestTrailers";
 import UpcomingTrailers from "@/components/home/UpcomingTrailers";
 
 export default async function HomeMovies() {
-  const [peliculas, recientesApi, celebridades, topSemanal, proximosEstrenos] = await Promise.all([
-    getPopularMovies(),
-    getNowPlayingMovies(),
-    getPopularPeople(),
-    getWeeklyTopMovies(),
-    getUpcomingMoviesWithTrailers(),
-  ]);
+  const [peliculas, recientesApi, celebridades, topSemanal, proximosEstrenos, ultimosTrailers] =
+    await Promise.all([
+      getPopularMovies(),
+      getNowPlayingMovies(),
+      getPopularPeople(),
+      getWeeklyTopMovies(),
+      getUpcomingMoviesWithTrailers(),
+      getLatestTrailers(),
+    ]);
   const destacada = peliculas?.[0] ?? null;
   const recientes = recientesApi.length ? recientesApi.slice(0, 10) : peliculas.slice(0, 10);
   const populares = peliculas.slice(10, 20).length
@@ -32,6 +36,11 @@ export default async function HomeMovies() {
     : null;
   const ratingMatch = Math.round((destacada?.vote_average ?? 0) * 10);
   const year = destacada?.release_date?.split("-")?.[0] ?? "N/D";
+  const latestTrailersForHome = ultimosTrailers.length
+    ? ultimosTrailers
+    : proximosEstrenos.length
+      ? proximosEstrenos.slice(0, 8)
+      : [];
 
   return (
     <section className="space-y-7">
@@ -84,6 +93,8 @@ export default async function HomeMovies() {
           </div>
         </div>
       </article>
+
+      <LatestTrailers peliculas={latestTrailersForHome} />
 
       <FeaturedHero principales={recientes.slice(0, 4)} />
 
