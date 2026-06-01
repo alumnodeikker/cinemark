@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { getStreamingAvailability } from "@/lib/streamingService";
 import { Play, Loader, AlertCircle } from "lucide-react";
 
 /**
  * Componente que muestra disponibilidad de streaming
  */
-export function StreamingAvailability({ movieId }) {
+export function StreamingAvailability({ movieId, movieTitle }) {
   const { location } = useGeolocation();
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,19 @@ export function StreamingAvailability({ movieId }) {
       setError(null);
 
       try {
-        const result = await getStreamingAvailability(movieId, location.countryCode);
+        const params = new URLSearchParams({
+          movieId: String(movieId),
+          countryCode: location.countryCode,
+        });
+        if (movieTitle) {
+          params.set("movieTitle", movieTitle);
+        }
+        const response = await fetch(`/api/streaming/availability?${params}`);
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.error || "Error cargando disponibilidad");
+        }
 
         if (result.success) {
           setProviders(result.data);
@@ -41,7 +52,7 @@ export function StreamingAvailability({ movieId }) {
     };
 
     loadStreaming();
-  }, [movieId, location?.countryCode]);
+  }, [movieId, movieTitle, location?.countryCode]);
 
   if (loading) {
     return (
@@ -86,7 +97,7 @@ export function StreamingAvailability({ movieId }) {
       </div>
 
       <p className="text-xs text-gray-500 text-center pt-2 border-t border-gray-200">
-        Precios y disponibilidad según tu país. Puedes cambiar.
+        Datos de TMDB Watch Providers para {location.countryName || location.countryCode}. Los enlaces se abren en una pestaña nueva.
       </p>
     </div>
   );
@@ -102,14 +113,45 @@ function StreamingProviderCard({ provider }) {
     buy: "Compra",
   };
 
+  const providerUrl =
+    provider?.url && !provider.url.includes("themoviedb.org") ? provider.url : null;
+
+  if (!providerUrl) {
+    return (
+      <div className="block bg-white border border-gray-200 rounded-lg p-4 opacity-70">
+        <ProviderLogo provider={provider} />
+        <h4 className="font-semibold text-sm text-gray-900 truncate">
+          {provider.provider_name}
+        </h4>
+        <p className="text-xs text-gray-600 mt-1">
+          Sin enlace directo público
+        </p>
+      </div>
+    );
+  }
+
   return (
     <a
-      href={provider.url}
+      href={providerUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="block bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition group"
     >
-      <div className="aspect-square bg-gray-100 rounded-md overflow-hidden mb-2 flex items-center justify-center group-hover:bg-gray-200 transition">
+      <ProviderLogo provider={provider} />
+      <h4 className="font-semibold text-sm text-gray-900 truncate">
+        {provider.provider_name}
+      </h4>
+      <p className="text-xs text-gray-600 mt-1">
+        {accessTypeLabel[provider.access_type] || provider.access_type}
+      </p>
+    </a>
+  );
+}
+
+function ProviderLogo({ provider }) {
+  return (
+    <div className="aspect-square bg-gray-100 rounded-md overflow-hidden mb-2 flex items-center justify-center group-hover:bg-gray-200 transition">
+      {provider.logo_path ? (
         <img
           src={provider.logo_path}
           alt={provider.provider_name}
@@ -118,13 +160,11 @@ function StreamingProviderCard({ provider }) {
             e.target.style.display = "none";
           }}
         />
-      </div>
-      <h4 className="font-semibold text-sm text-gray-900 truncate">
-        {provider.provider_name}
-      </h4>
-      <p className="text-xs text-gray-600 mt-1">
-        {accessTypeLabel[provider.access_type] || provider.access_type}
-      </p>
-    </a>
+      ) : (
+        <span className="text-lg font-black text-gray-400">
+          {provider.provider_name?.slice(0, 1)}
+        </span>
+      )}
+    </div>
   );
 }

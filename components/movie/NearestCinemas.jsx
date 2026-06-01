@@ -3,7 +3,6 @@
 import { generarUrlYelmo } from "@/lib/yelmoUrlGenerator";
 import { useEffect, useState } from "react";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { getNearbyCinemas } from "@/lib/cinemasService";
 import {
   MapPin,
   Ticket,
@@ -13,7 +12,7 @@ import {
   AlertCircle,
   Navigation,
 } from "lucide-react";
-export function NearestCinemas({ movieId, movieTitle }) {
+export function NearestCinemas({ movieTitle }) {
   const { location } = useGeolocation();
   const [cinemas, setCinemas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,12 +33,18 @@ export function NearestCinemas({ movieId, movieTitle }) {
       setError(null);
 
       try {
-        const result = await getNearbyCinemas(
-          location.latitude,
-          location.longitude,
-          location.countryCode,
-          15 // 15 km radio
-        );
+        const params = new URLSearchParams({
+          latitude: String(location.latitude),
+          longitude: String(location.longitude),
+          countryCode: location.countryCode,
+          radius: "15",
+        });
+        const response = await fetch(`/api/cinemas/nearby?${params}`);
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result?.error || "Error cargando cines cercanos");
+        }
 
         if (result.success) {
           setCinemas(result.data);
@@ -92,15 +97,18 @@ export function NearestCinemas({ movieId, movieTitle }) {
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-lg font-bold text-gray-900">
         <Navigation className="w-6 h-6 text-purple-600" />
-        Cines cercanos ({cinemas.length})
+        Esta película se está proyectando cerca de ti
       </div>
+      <p className="text-sm text-gray-600">
+        Cines cercanos en un radio de 15 km ({cinemas.length}). Los horarios y la compra se consultan en el sitio oficial del cine.
+      </p>
 
       <div className="grid gap-3 max-h-96 overflow-y-auto">
         {cinemas.slice(0, expanded ? undefined : 3).map((cinema) => (
           <CinemaCard
             key={cinema.id}
             cinema={cinema}
-            movieId={movieId}
+            movieTitle={movieTitle}
           />
         ))}
       </div>
@@ -129,7 +137,9 @@ export function NearestCinemas({ movieId, movieTitle }) {
 /**
  * Tarjeta individual de cine
  */
-function CinemaCard({ cinema, movieId }) {
+function CinemaCard({ cinema, movieTitle }) {
+  const ticketUrl = cinema.website || generarUrlYelmo(movieTitle, cinema.city);
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -163,21 +173,27 @@ function CinemaCard({ cinema, movieId }) {
         <div className="flex items-start gap-2">
           <Clock className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
           <div className="flex gap-1 flex-wrap">
-            {cinema.showtimes.map((time) => (
-              <span
-                key={time}
-                className="inline-block px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium"
-              >
-                {time}
+            {cinema.showtimes?.length ? (
+              cinema.showtimes.map((time) => (
+                <span
+                  key={time}
+                  className="inline-block px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium"
+                >
+                  {time}
+                </span>
+              ))
+            ) : (
+              <span className="inline-block px-2 py-1 bg-green-50 text-green-700 text-xs rounded font-medium">
+                Consultar horarios oficiales
               </span>
-            ))}
+            )}
           </div>
         </div>
       </div>
 
       {/* Botón de compra */}
       <a
-        href={generarUrlYelmo(movieTitle, cinema.city)}
+        href={ticketUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm transition"

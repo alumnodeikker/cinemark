@@ -23,7 +23,7 @@ export default function CelebrityCarousel({ celebridades = [] }) {
     <section className="space-y-3 text-white">
       <h2 className="flex items-center gap-2 text-3xl font-black uppercase tracking-normal text-white">
         <span className="h-7 w-1 bg-blue-600" />
-        Celebridades mas populares
+        Actores destacados en cartelera
       </h2>
 
       <div className="relative">
@@ -75,7 +75,9 @@ export default function CelebrityCarousel({ celebridades = [] }) {
 
                 <Link href={`/actor/${celeb.id}`} className="mt-3 block">
                   <p className="truncate text-base font-bold leading-tight text-white">{celeb.name}</p>
-                  <p className="mt-1 text-sm font-semibold text-blue-300">{Math.round(celeb.popularity ?? 0)}</p>
+                  <p className="mt-1 line-clamp-2 text-sm font-semibold text-blue-300">
+                    {celeb.featuredMovie || `${Math.round(celeb.popularity ?? 0)} popularidad`}
+                  </p>
                 </Link>
               </article>
             );

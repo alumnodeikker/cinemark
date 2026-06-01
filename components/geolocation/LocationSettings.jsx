@@ -77,7 +77,7 @@ export function LocationSettings() {
 
       <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
         <p className="text-xs text-blue-800">
-          <strong>RGPD:</strong> Tu ubicación no se almacena en nuestros servidores. Solo se usa localmente en tu navegador para encontrar cines cercanos. 
+          <strong>RGPD:</strong> Tu ubicación no se almacena en nuestros servidores. Si aceptas, se guarda localmente en este navegador durante 24 horas para encontrar cines cercanos. 
           Puedes cambiar esta preferencia en cualquier momento.
         </p>
       </div>

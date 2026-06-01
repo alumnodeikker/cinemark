@@ -21,6 +21,7 @@ export default function MovieCard({
   pelicula = null,
   onFavoritoChange = null,
   modo = "grid",
+  showActions = true,
 }) {
   const imageUrl = imagenPath
     ? `https://image.tmdb.org/t/p/w500${imagenPath}`
@@ -240,23 +241,25 @@ export default function MovieCard({
         </div>
       </Link>
 
-      <div className="mt-2 space-y-2 text-white">
-        <div className="flex gap-2">
-          <TrailerModal
-            trailerKey={trailerKey}
-            title={`Trailer de ${titulo}`}
-            className="flex-1 rounded-sm bg-blue-700 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-blue-600 disabled:opacity-70"
-          >
-            Ver trailer
-          </TrailerModal>
-          <Link
-            href={id ? `/peli/${id}` : "#"}
-            className="rounded-sm border border-white/25 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 transition hover:border-white/45 hover:bg-white/10"
-          >
-            Info
-          </Link>
+      {showActions && (
+        <div className="mt-2 space-y-2 text-white">
+          <div className="flex gap-2">
+            <TrailerModal
+              trailerKey={trailerKey}
+              title={`Trailer de ${titulo}`}
+              className="flex-1 rounded-sm bg-blue-700 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-blue-600 disabled:opacity-70"
+            >
+              Ver trailer
+            </TrailerModal>
+            <Link
+              href={id ? `/peli/${id}` : "#"}
+              className="rounded-sm border border-white/25 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 transition hover:border-white/45 hover:bg-white/10"
+            >
+              Info
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </article>
   );
 }

@@ -40,10 +40,9 @@ export async function GET(request) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    // Cachear respuesta por 1 hora
     return NextResponse.json(result, {
       headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+        "Cache-Control": "private, no-store",
       },
     });
   } catch (error) {

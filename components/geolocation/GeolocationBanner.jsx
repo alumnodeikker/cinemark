@@ -32,7 +32,7 @@ export function GeolocationBanner() {
             <div className="flex items-start gap-2 mt-2 text-xs text-gray-500">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <p>
-                Tu ubicación no se almacena. Solo la usamos para encontrar cines cercanos. Cumple con RGPD.
+                Si aceptas, guardamos tu ubicación solo en este navegador durante 24 horas para encontrar cines cercanos. No se envía a nuestro servidor para almacenarla.
               </p>
             </div>
           </div>

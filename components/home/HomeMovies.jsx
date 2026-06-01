@@ -4,7 +4,9 @@ import {
   getLatestTrailers,
   getNowPlayingMovies,
   getPopularMovies,
-  getPopularPeople,
+  getCurrentTheatricalActors,
+  getTopRatedMovies,
+  getUpcomingMoviesSoon,
   getUpcomingMoviesWithTrailers,
   getWeeklyTopMovies,
 } from "@/lib/tmdb";
@@ -16,20 +18,19 @@ import LatestTrailers from "@/components/home/LatestTrailers";
 import UpcomingTrailers from "@/components/home/UpcomingTrailers";
 
 export default async function HomeMovies() {
-  const [peliculas, recientesApi, celebridades, topSemanal, proximosEstrenos, ultimosTrailers] =
+  const [peliculas, recientesApi, celebridades, topSemanal, mejorValoradas, estrenosCercanos, proximosEstrenos, ultimosTrailers] =
     await Promise.all([
       getPopularMovies(),
       getNowPlayingMovies(),
-      getPopularPeople(),
+      getCurrentTheatricalActors(),
       getWeeklyTopMovies(),
+      getTopRatedMovies(),
+      getUpcomingMoviesSoon(15),
       getUpcomingMoviesWithTrailers(),
       getLatestTrailers(),
     ]);
   const destacada = peliculas?.[0] ?? null;
   const recientes = recientesApi.length ? recientesApi.slice(0, 10) : peliculas.slice(0, 10);
-  const populares = peliculas.slice(10, 20).length
-    ? peliculas.slice(10, 20)
-    : peliculas.slice(0, 10);
   const destacadaImagePath = destacada?.backdrop_path || destacada?.poster_path;
   const destacadaBackdrop = destacadaImagePath
     ? `https://image.tmdb.org/t/p/original${destacadaImagePath}`
@@ -102,10 +103,10 @@ export default async function HomeMovies() {
 
       <section className="space-y-3">
         <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-          Estrenos 2026 en Espana
+          Películas mejor valoradas de todos los tiempos
         </h2>
         <div className="poster-rail">
-          {recientes.map((peli) => (
+          {(mejorValoradas.length ? mejorValoradas : recientes).map((peli) => (
             <MovieCard
               key={peli.id}
               id={peli.id}
@@ -117,6 +118,7 @@ export default async function HomeMovies() {
               trailerKey={peli.trailer_key}
               pelicula={peli}
               modo="rail"
+              showActions={false}
             />
           ))}
         </div>
@@ -124,27 +126,30 @@ export default async function HomeMovies() {
 
       <CelebrityCarousel celebridades={celebridades} />
 
-      <section className="space-y-3">
-        <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-          Proximamente en cines
-        </h2>
-        <div className="poster-rail">
-          {populares.map((peli) => (
-            <MovieCard
-              key={peli.id}
-              id={peli.id}
-              titulo={peli.title}
-              descripcion={peli.overview}
-              rating={peli.vote_average}
-              imagenPath={peli.poster_path}
-              backdropPath={peli.backdrop_path}
-              trailerKey={peli.trailer_key}
-              pelicula={peli}
-              modo="rail"
-            />
-          ))}
-        </div>
-      </section>
+      {estrenosCercanos.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-3xl font-black uppercase tracking-wide text-white">
+            Próximos estrenos en 15 días
+          </h2>
+          <div className="poster-rail">
+            {estrenosCercanos.map((peli) => (
+              <MovieCard
+                key={peli.id}
+                id={peli.id}
+                titulo={peli.title}
+                descripcion={peli.overview}
+                rating={peli.vote_average}
+                imagenPath={peli.poster_path}
+                backdropPath={peli.backdrop_path}
+                trailerKey={peli.trailer_key}
+                pelicula={peli}
+                modo="rail"
+                showActions={false}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <Top10Grid peliculas={topSemanal} />
     </section>

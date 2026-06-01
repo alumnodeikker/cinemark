@@ -1,4 +1,4 @@
-import { getStreamingAvailability, getProvidersInCountry } from "@/lib/streamingService";
+import { getStreamingAvailability } from "@/lib/streamingService";
 import { NextResponse } from "next/server";
 
 /**
@@ -13,6 +13,7 @@ export async function GET(request) {
 
     const movieId = searchParams.get("movieId");
     const countryCode = searchParams.get("countryCode") || "ES";
+    const movieTitle = searchParams.get("movieTitle") || "";
 
     if (!movieId) {
       return NextResponse.json(
@@ -22,7 +23,7 @@ export async function GET(request) {
     }
 
     // Obtener disponibilidad de streaming
-    const result = await getStreamingAvailability(movieId, countryCode);
+    const result = await getStreamingAvailability(movieId, countryCode, movieTitle);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 });

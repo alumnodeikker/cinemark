@@ -11,6 +11,7 @@ import { MovieStatus } from "@/components/movie/MovieStatus";
 import { NearestCinemas } from "@/components/movie/NearestCinemas";
 import { StreamingAvailability } from "@/components/movie/StreamingAvailability";
 import { ReleaseCountdown } from "@/components/movie/ReleaseCountdown";
+import { LocalReleaseInfo } from "@/components/movie/LocalReleaseInfo";
 import { buildYoutubeEmbedUrl, getMovie } from "@/lib/tmdb";
 import { absoluteUrl, compactDescription, tmdbImage } from "@/lib/seo";
 
@@ -423,8 +424,9 @@ export default async function FichaPelicula({ params }) {
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <MovieStatus releaseDate={peli.release_date} status={peli.status} />
-          <NearestCinemas movieId={peli.id} movieTitle={peli.title} />
-          <StreamingAvailability movieId={peli.id} />
+          <LocalReleaseInfo releaseDates={peli.release_dates?.results ?? []} />
+          <NearestCinemas movieTitle={peli.title} />
+          <StreamingAvailability movieId={peli.id} movieTitle={peli.title} />
           {peli.status === "Upcoming" && <ReleaseCountdown releaseDate={peli.release_date} movieTitle={peli.title} />}
         </div>
       </section>
