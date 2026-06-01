@@ -1,5 +1,6 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
 
 export default function Top10Grid({ peliculas = [] }) {
   const top = peliculas.slice(0, 10);
@@ -25,7 +26,9 @@ export default function Top10Grid({ peliculas = [] }) {
               <div className="relative h-[132px] w-[88px] overflow-hidden rounded-lg bg-zinc-800">
                 {poster ? (
                   <Image src={poster} alt={item.title} fill sizes="88px" className="object-cover" />
-                ) : null}
+                ) : (
+                  <ImagePlaceholder title={item.title} label="Poster no disponible" />
+                )}
               </div>
               <div>
                 <span className="rounded bg-blue-600 px-2 py-1 text-xs font-bold">#{idx + 1}</span>
@@ -52,7 +55,9 @@ export default function Top10Grid({ peliculas = [] }) {
               <div className="relative h-40 w-full overflow-hidden rounded-md bg-zinc-800">
                 {poster ? (
                   <Image src={poster} alt={item.title} fill sizes="160px" className="object-cover" />
-                ) : null}
+                ) : (
+                  <ImagePlaceholder title={item.title} label="Poster no disponible" />
+                )}
                 <span className="absolute left-1 top-1 rounded bg-blue-600 px-2 py-0.5 text-xs font-bold">#{rank}</span>
               </div>
               <p className="mt-2 line-clamp-2 text-center text-xs">{item.title}</p>
@@ -63,4 +68,3 @@ export default function Top10Grid({ peliculas = [] }) {
     </section>
   );
 }
-

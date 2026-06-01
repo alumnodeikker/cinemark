@@ -113,6 +113,8 @@ export default async function HomeMovies() {
               descripcion={peli.overview}
               rating={peli.vote_average}
               imagenPath={peli.poster_path}
+              backdropPath={peli.backdrop_path}
+              trailerKey={peli.trailer_key}
               pelicula={peli}
               modo="rail"
             />
@@ -135,6 +137,8 @@ export default async function HomeMovies() {
               descripcion={peli.overview}
               rating={peli.vote_average}
               imagenPath={peli.poster_path}
+              backdropPath={peli.backdrop_path}
+              trailerKey={peli.trailer_key}
               pelicula={peli}
               modo="rail"
             />

@@ -50,6 +50,7 @@ const ITEMS = [
   { href: "/populares", label: "Populares", icon: GridIcon },
   { href: "/mis_actores", label: "Actores", icon: GridIcon },
   { href: "/mis_fav", label: "Favoritas", icon: HeartIcon },
+  { href: "/usuario", label: "Usuario", icon: HeartIcon },
 ];
 
 function movieYear(date) {
@@ -218,7 +219,7 @@ export default function Header() {
                           <p className="truncate text-sm font-bold text-white">{movie.title}</p>
                           <p className="mt-1 text-xs font-semibold text-blue-200">
                             {movieYear(movie.release_date)}
-                            {movie.vote_average ? ` · ${Number(movie.vote_average).toFixed(1)}/10` : ""}
+                            {movie.vote_average ? ` - ${Number(movie.vote_average).toFixed(1)}/10` : ""}
                           </p>
                           <p className="mt-1 line-clamp-1 text-xs text-white/55">
                             {movie.overview || "Abrir ficha de pelicula"}

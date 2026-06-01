@@ -1,5 +1,6 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
 
 export default function FeaturedHero({ principales = [] }) {
   const main = principales[0];
@@ -23,7 +24,9 @@ export default function FeaturedHero({ principales = [] }) {
               sizes="(max-width: 1024px) 100vw, 70vw"
               className="object-cover transition duration-500 group-hover:scale-105"
             />
-          ) : null}
+          ) : (
+            <ImagePlaceholder title={main.title} label="Fondo no disponible" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
           <div className="absolute bottom-6 left-6 max-w-md">
             <h2 className="text-2xl font-bold lg:text-3xl">{main.title}</h2>
@@ -50,7 +53,9 @@ export default function FeaturedHero({ principales = [] }) {
                   <div className="relative h-14 w-24 overflow-hidden rounded bg-zinc-800">
                     {thumb ? (
                       <Image src={thumb} alt={item.title} fill sizes="96px" className="object-cover" />
-                    ) : null}
+                    ) : (
+                      <ImagePlaceholder title={item.title} label="Miniatura no disponible" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 text-sm font-medium">{item.title}</p>
@@ -65,4 +70,3 @@ export default function FeaturedHero({ principales = [] }) {
     </section>
   );
 }
-

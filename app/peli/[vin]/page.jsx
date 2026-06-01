@@ -3,6 +3,14 @@ import Link from "next/link";
 import FavoriteMovieButton from "@/components/movie/FavoriteMovieButton";
 import FavoriteActorButton from "@/components/movie/FavoriteActorButton";
 import MoviePhotoGallery from "@/components/movie/MoviePhotoGallery";
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
+import MovieComments from "@/components/movie/MovieComments";
+import TrailerModal from "@/components/movie/TrailerModal";
+import ViewTracker from "@/components/movie/ViewTracker";
+import { MovieStatus } from "@/components/movie/MovieStatus";
+import { NearestCinemas } from "@/components/movie/NearestCinemas";
+import { StreamingAvailability } from "@/components/movie/StreamingAvailability";
+import { ReleaseCountdown } from "@/components/movie/ReleaseCountdown";
 import { buildYoutubeEmbedUrl, getMovie } from "@/lib/tmdb";
 import { absoluteUrl, compactDescription, tmdbImage } from "@/lib/seo";
 
@@ -162,12 +170,45 @@ export default async function FichaPelicula({ params }) {
     overview: peli.overview ?? "",
     vote_average: peli.vote_average ?? 0,
     poster_path: peli.poster_path ?? null,
+    backdrop_path: peli.backdrop_path ?? null,
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    name: peli.title,
+    description: peli.overview || undefined,
+    image: posterUrl || backdropUrl || undefined,
+    datePublished: peli.release_date || undefined,
+    duration: peli.runtime ? `PT${peli.runtime}M` : undefined,
+    genre: genresList,
+    aggregateRating: peli.vote_count
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: Number(peli.vote_average || 0).toFixed(1),
+          ratingCount: peli.vote_count,
+          bestRating: 10,
+          worstRating: 0,
+        }
+      : undefined,
+    trailer: trailer?.key
+      ? {
+          "@type": "VideoObject",
+          name: `Trailer de ${peli.title}`,
+          embedUrl: buildYoutubeEmbedUrl(trailer.key),
+          thumbnailUrl: backdropUrl || posterUrl || undefined,
+        }
+      : undefined,
   };
 
   return (
     <main className="mx-auto w-full max-w-[1220px] space-y-6 px-4 py-4 text-white sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <ViewTracker movie={peliculaFavorita} />
       <section className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#06080f] shadow-[0_28px_80px_rgba(0,0,0,0.45)]">
-        {backdropUrl && (
+        {backdropUrl ? (
           <Image
             src={backdropUrl}
             alt={`Fondo de ${peli.title}`}
@@ -175,6 +216,8 @@ export default async function FichaPelicula({ params }) {
             priority
             className="object-cover"
           />
+        ) : (
+          <ImagePlaceholder title={peli.title} label="Fondo no disponible" />
         )}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(79,140,255,0.18),transparent_28%),linear-gradient(90deg,rgba(2,6,14,0.98)_0%,rgba(2,6,14,0.88)_28%,rgba(2,6,14,0.54)_58%,rgba(2,6,14,0.9)_100%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#03060e] via-[#03060e]/20 to-black/30" />
@@ -197,6 +240,10 @@ export default async function FichaPelicula({ params }) {
                 <span className="hidden text-white/30 xl:inline">•</span>
                 <Link href="#trailer" className="transition hover:text-white">
                   Trailer
+                </Link>
+                <span className="hidden text-white/30 xl:inline">•</span>
+                <Link href="#comentarios" className="transition hover:text-white">
+                  Comentarios
                 </Link>
               </div>
 
@@ -257,9 +304,7 @@ export default async function FichaPelicula({ params }) {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-neutral-900 text-sm text-white/45">
-                    Sin poster
-                  </div>
+                  <ImagePlaceholder title={peli.title} label="Poster no disponible" />
                 )}
               </div>
             </div>
@@ -297,18 +342,19 @@ export default async function FichaPelicula({ params }) {
                     </p>
 
                     <div className="flex flex-wrap gap-3">
-                      <Link
-                        href="/"
+                      <TrailerModal
+                        trailerKey={trailer?.key}
+                        title={`Trailer de ${peli.title}`}
                         className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 px-5 py-3 text-sm font-semibold text-white transition hover:border-blue-300/40 hover:bg-white/8"
                       >
-                        Volver al inicio
-                      </Link>
+                        Abrir en modal
+                      </TrailerModal>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="relative min-h-[360px] sm:min-h-[460px] xl:min-h-[520px]">
-                  {backdropUrl && (
+                  {backdropUrl ? (
                     <Image
                       src={backdropUrl}
                       alt={`Escena de ${peli.title}`}
@@ -316,6 +362,8 @@ export default async function FichaPelicula({ params }) {
                       sizes="(max-width: 1280px) 100vw, 900px"
                       className="object-cover opacity-45"
                     />
+                  ) : (
+                    <ImagePlaceholder title={peli.title} label="Fondo no disponible" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/50" />
                   <div className="relative flex min-h-[280px] flex-col justify-end gap-4 p-5 sm:p-6">
@@ -369,6 +417,15 @@ export default async function FichaPelicula({ params }) {
               <p className="mt-2 text-sm text-white/65">{formatMoney(peli.revenue)} de recaudacion</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          <MovieStatus releaseDate={peli.release_date} status={peli.status} />
+          <NearestCinemas movieId={peli.id} movieTitle={peli.title} />
+          <StreamingAvailability movieId={peli.id} />
+          {peli.status === "Upcoming" && <ReleaseCountdown releaseDate={peli.release_date} movieTitle={peli.title} />}
         </div>
       </section>
 
@@ -535,6 +592,8 @@ export default async function FichaPelicula({ params }) {
           />
         </section>
       )}
+
+      <MovieComments movieId={peli.id} movieTitle={peli.title} />
 
     </main>
   );

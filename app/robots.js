@@ -5,7 +5,7 @@ export default function robots() {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/buscar", "/mis_fav", "/mis_actores"],
+      disallow: ["/api/", "/buscar", "/mis_fav", "/mis_actores", "/usuario"],
     },
     sitemap: absoluteUrl("/sitemap.xml"),
     host: siteConfig.url,

@@ -4,11 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useMovieStore } from "@/stores/movieStore";
-
-function buildYoutubeWatchUrl(key) {
-  if (!key) return "#";
-  return `https://www.youtube.com/watch?v=${key}`;
-}
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
+import TrailerModal from "@/components/movie/TrailerModal";
 
 function buildYoutubeEmbedUrl(key) {
   if (!key) return null;
@@ -173,14 +170,13 @@ export default function UpcomingTrailers({ peliculas = [] }) {
             >
               Ver ficha
             </Link>
-            <a
-              href={buildYoutubeWatchUrl(selectedMovie.trailer_key)}
-              target="_blank"
-              rel="noreferrer"
+            <TrailerModal
+              trailerKey={selectedMovie.trailer_key}
+              title={`Trailer de ${selectedMovie.title}`}
               className="inline-flex h-9 items-center justify-center rounded-sm border border-white/20 px-4 text-sm font-semibold text-white transition hover:bg-white/10"
             >
-              YouTube
-            </a>
+              Ver trailer
+            </TrailerModal>
           </div>
         </div>
       </article>
@@ -229,9 +225,7 @@ export default function UpcomingTrailers({ peliculas = [] }) {
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-white/45">
-                      Sin imagen
-                    </div>
+                  <ImagePlaceholder title={movie.title} label="Miniatura no disponible" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-3 left-3 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-black/35 text-white">
@@ -270,14 +264,13 @@ export default function UpcomingTrailers({ peliculas = [] }) {
                     </Link>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <a
-                        href={buildYoutubeWatchUrl(movie.trailer_key)}
-                        target="_blank"
-                        rel="noreferrer"
+                      <TrailerModal
+                        trailerKey={movie.trailer_key}
+                        title={`Trailer de ${movie.title}`}
                         className="inline-flex h-7 items-center justify-center rounded-sm px-1 text-xs font-semibold text-blue-300 transition hover:text-blue-200"
                       >
-                        YouTube
-                      </a>
+                        Trailer
+                      </TrailerModal>
 
                       <ReactionButton
                         active={liked}

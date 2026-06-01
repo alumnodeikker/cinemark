@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import FavoriteMovieButton from "@/components/movie/FavoriteMovieButton";
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
+import TrailerModal from "@/components/movie/TrailerModal";
 
 function formatearRating(rating = 0) {
   return Math.round(rating * 10) / 10;
@@ -15,6 +17,7 @@ export default function MovieCard({
   rating = 0,
   imagenPath = null,
   backdropPath = null,
+  trailerKey = null,
   pelicula = null,
   onFavoritoChange = null,
   modo = "grid",
@@ -40,7 +43,7 @@ export default function MovieCard({
   if (modo === "hero") {
     return (
       <article className="hero-card relative overflow-hidden rounded-[1.75rem] border border-white/10">
-        {backdropUrl && (
+        {backdropUrl ? (
           <Image
             src={backdropUrl}
             alt={titulo}
@@ -49,6 +52,8 @@ export default function MovieCard({
             sizes="100vw"
             className="object-cover"
           />
+        ) : (
+          <ImagePlaceholder title={titulo} label="Fondo no disponible" />
         )}
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(79,140,255,0.18),transparent_30%),linear-gradient(90deg,rgba(3,6,14,0.98)_0%,rgba(3,6,14,0.84)_36%,rgba(3,6,14,0.58)_60%,rgba(3,6,14,0.92)_100%)]" />
@@ -121,9 +126,7 @@ export default function MovieCard({
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-neutral-900 text-sm text-white/45">
-                    Sin imagen
-                  </div>
+                  <ImagePlaceholder title={titulo} label="Poster no disponible" />
                 )}
               </div>
             </Link>
@@ -156,12 +159,13 @@ export default function MovieCard({
                   >
                     Ver ficha completa
                   </Link>
-                  <Link
-                    href={id ? `/peli/${id}#trailer` : "#"}
+                  <TrailerModal
+                    trailerKey={trailerKey}
+                    title={`Trailer de ${titulo}`}
                     className="inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 px-5 py-3 text-sm font-semibold text-white transition hover:border-blue-300/40 hover:bg-white/8"
                   >
                     Ver trailer
-                  </Link>
+                  </TrailerModal>
                 </div>
               </div>
             </div>
@@ -208,9 +212,7 @@ export default function MovieCard({
             className="object-cover transition duration-500 group-hover:scale-[1.06]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-neutral-800 text-neutral-500">
-            Sin imagen
-          </div>
+          <ImagePlaceholder title={titulo} label="Poster no disponible" />
         )}
 
         <span className="absolute left-2 top-2 z-20 rounded-sm bg-blue-700/90 px-1.5 py-0.5 text-[10px] font-black tracking-wide text-white">
@@ -240,12 +242,13 @@ export default function MovieCard({
 
       <div className="mt-2 space-y-2 text-white">
         <div className="flex gap-2">
-          <Link
-            href={id ? `/peli/${id}#trailer` : "#"}
+          <TrailerModal
+            trailerKey={trailerKey}
+            title={`Trailer de ${titulo}`}
             className="flex-1 rounded-sm bg-blue-700 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-blue-600 disabled:opacity-70"
           >
             Ver trailer
-          </Link>
+          </TrailerModal>
           <Link
             href={id ? `/peli/${id}` : "#"}
             className="rounded-sm border border-white/25 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/90 transition hover:border-white/45 hover:bg-white/10"

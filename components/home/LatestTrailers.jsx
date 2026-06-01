@@ -1,21 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
+import ImagePlaceholder from "@/components/movie/ImagePlaceholder";
+import TrailerModal from "@/components/movie/TrailerModal";
 
-const FILTERS = ["Popular", "Retransmisión", "En televisión", "En alquiler", "En cines"];
+const FILTERS = ["Popular", "Streaming", "TV", "Alquiler", "En cines"];
 
 function formatReleaseDate(date) {
-  if (!date) return "Próximamente";
+  if (!date) return "Proximamente";
   const parsed = new Date(`${date}T00:00:00`);
-  if (Number.isNaN(parsed.getTime())) return "Próximamente";
+  if (Number.isNaN(parsed.getTime())) return "Proximamente";
 
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",
     month: "long",
   }).format(parsed);
-}
-function buildYoutubeWatchUrl(key) {
-  if (!key) return "#";
-  return `https://www.youtube.com/watch?v=${key}`;
 }
 
 export default function LatestTrailers({ peliculas = [] }) {
@@ -25,7 +23,7 @@ export default function LatestTrailers({ peliculas = [] }) {
   return (
     <section className="space-y-4 text-white">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Tráilers populares</h2>
+        <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Trailers populares</h2>
         <div className="flex flex-wrap gap-2">
           {FILTERS.map((filter, index) => (
             <button
@@ -44,8 +42,6 @@ export default function LatestTrailers({ peliculas = [] }) {
       </div>
 
       <article className="relative overflow-hidden rounded-sm border border-white/10 bg-[linear-gradient(180deg,rgba(11,31,53,0.9)_0%,rgba(7,10,15,0.95)_65%)] p-4 sm:p-5">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(79,140,255,0.2),transparent_35%)]" />
-
         <div className="poster-rail relative gap-4 pb-2">
           {conTrailer.map((movie) => {
             const backdropUrl = movie.backdrop_path
@@ -56,12 +52,10 @@ export default function LatestTrailers({ peliculas = [] }) {
 
             return (
               <article key={movie.id} className="w-[300px] shrink-0 sm:w-[360px]">
-                <a
-                  href={buildYoutubeWatchUrl(movie.trailer_key)}
-                  className="group block"
-                  aria-label={`Ver tráiler de ${movie.title}`}
-                  target="_blank"
-                  rel="noreferrer"
+                <TrailerModal
+                  trailerKey={movie.trailer_key}
+                  title={`Trailer de ${movie.title}`}
+                  className="group block w-full text-left"
                 >
                   <div className="relative aspect-video overflow-hidden rounded-sm border border-white/10 bg-zinc-900">
                     {backdropUrl ? (
@@ -73,9 +67,7 @@ export default function LatestTrailers({ peliculas = [] }) {
                         className="object-cover transition duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-white/60">
-                        Sin imagen
-                      </div>
+                      <ImagePlaceholder title={movie.title} label="Miniatura no disponible" />
                     )}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
@@ -91,10 +83,10 @@ export default function LatestTrailers({ peliculas = [] }) {
                       {movie.title}
                     </p>
                     <p className="mt-1 text-sm text-white/85">
-                      Tráiler oficial · {formatReleaseDate(movie.release_date)}
+                      Trailer oficial - {formatReleaseDate(movie.release_date)}
                     </p>
                   </div>
-                </a>
+                </TrailerModal>
                 <div className="pt-2 text-center">
                   <Link
                     href={`/peli/${movie.id}`}

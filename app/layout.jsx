@@ -1,5 +1,6 @@
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import { GeolocationBanner } from "@/components/geolocation/GeolocationBanner";
 import { siteConfig } from "@/lib/seo";
 
 export const metadata = {
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
           <div className="nfx-frame min-h-screen">
             <Header />
             <main className="nfx-content">{children}</main>
+            <GeolocationBanner />
           </div>
         </div>
       </body>
