@@ -45,12 +45,25 @@ function HeartIcon() {
   );
 }
 
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+      <circle cx="12" cy="8" r="4" strokeWidth="2" />
+      <path
+        d="M4.5 20c1.4-4 4-6 7.5-6s6.1 2 7.5 6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const ITEMS = [
   { href: "/", label: "Inicio", icon: HomeIcon },
-  { href: "/populares", label: "Populares", icon: GridIcon },
   { href: "/mis_actores", label: "Actores", icon: GridIcon },
   { href: "/mis_fav", label: "Favoritas", icon: HeartIcon },
-  { href: "/usuario", label: "Usuario", icon: HeartIcon },
+  { href: "/usuario", label: "Usuario", icon: UserIcon },
 ];
 
 function movieYear(date) {

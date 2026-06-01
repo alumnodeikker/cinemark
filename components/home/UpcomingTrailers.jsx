@@ -109,16 +109,10 @@ export default function UpcomingTrailers({ peliculas = [] }) {
   return (
     <section className="space-y-4 text-white">
       <div>
-        <Link
-          href="/populares"
-          className="inline-flex items-center gap-2 text-2xl font-black tracking-normal text-white transition hover:text-amber-300 sm:text-3xl"
-        >
+        <div className="inline-flex items-center gap-2 text-2xl font-black tracking-normal text-white sm:text-3xl">
           <span className="h-7 w-1 bg-amber-400" />
           Proximamente en cines
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor">
-            <path d="m9 5 7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
+        </div>
         <p className="mt-1 text-base text-white/78 sm:text-lg">Trailers de proximos lanzamientos</p>
       </div>
 

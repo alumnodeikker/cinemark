@@ -18,12 +18,6 @@ export default async function sitemap() {
       changeFrequency: "daily",
       priority: 1,
     },
-    {
-      url: absoluteUrl("/populares"),
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
     ...movies.map((movie) => ({
       url: absoluteUrl(`/peli/${movie.id}`),
       lastModified: movie.release_date ? new Date(`${movie.release_date}T00:00:00`) : now,
