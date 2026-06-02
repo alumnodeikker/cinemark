@@ -1,52 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Cinemark
 
-## Getting Started
+Aplicacion de peliculas hecha con Next.js. Permite buscar titulos, ver trailers, guardar favoritos, seguir estrenos, revisar tendencias por region y usar un asistente conversacional que recomienda que ver hoy.
 
-Create a local environment file with your TMDB read access token:
+## Funciones
+
+- Busqueda de peliculas por titulo
+- Fichas con trailer, reparto e imagenes
+- Favoritos e historial local
+- Seguimiento de estrenos
+- Tendencias segun region
+- Recomendaciones personalizadas
+- Asistente tipo chat con Gemini y fallback local
+
+## Requisitos
+
+- Node.js 20 o superior
+- npm
+- Git
+
+## Instalacion local
 
 ```bash
-cp .env.example .env.local
-```
-
-Then edit `.env.local` and replace `tu_token_de_lectura_de_tmdb` with the
-**API Read Access Token** from your TMDB account:
-
-```txt
-TMDB_ACCESS_TOKEN=pon_aqui_tu_token_de_lectura_de_tmdb
-```
-
-Keep this variable without the `NEXT_PUBLIC_` prefix so it stays on the server.
-Restart the dev server after changing `.env.local`.
-
-First, run the development server:
-
-```bash
+git clone git@github.com:alumnodeikker/cinemark.git
+cd cinemark
+npm install
+copy .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Luego abre:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Variables de entorno
 
-## Learn More
+Edita `.env.local` y coloca tus claves reales:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+TMDB_ACCESS_TOKEN=tu_token_real_de_tmdb
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+GEMINI_API_KEY=tu_clave_real_de_google
+GEMINI_MODEL=gemini-2.5-flash
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Guia para clase
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Si vas a abrirlo en Windows para exponer, usa esta guia:
 
-## Deploy on Vercel
+- [GUIA_CLASE_WINDOWS.md](./GUIA_CLASE_WINDOWS.md)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Estructura general
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` rutas y paginas
+- `components/` interfaz y widgets
+- `lib/` logica de TMDB, geolocalizacion y utilidades
+- `stores/` estado local del usuario
+
+## Notas
+
+- `.env.example` es solo plantilla.
+- `.env.local` no se sube a GitHub.
+- Si cambias variables de entorno, reinicia el servidor.
+
