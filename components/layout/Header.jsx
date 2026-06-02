@@ -45,6 +45,24 @@ function HeartIcon() {
   );
 }
 
+function BookmarkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+      <path d="M7 4h10v17l-5-3-5 3V4Z" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M12 8v6M9 11h6" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BotIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+      <rect x="5" y="8" width="14" height="11" rx="3" strokeWidth="2" />
+      <path d="M12 4v4M9 13h.01M15 13h.01M9.5 17h5" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function UserIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
@@ -63,6 +81,8 @@ const ITEMS = [
   { href: "/", label: "Inicio", icon: HomeIcon },
   { href: "/mis_actores", label: "Actores", icon: GridIcon },
   { href: "/mis_fav", label: "Favoritas", icon: HeartIcon },
+  { href: "/seguimiento", label: "Seguimiento", icon: BookmarkIcon },
+  { href: "/asistente", label: "Asistente", icon: BotIcon },
   { href: "/usuario", label: "Usuario", icon: UserIcon },
 ];
 
@@ -96,7 +116,7 @@ export default function Header() {
           signal: controller.signal,
         });
         const data = res.ok ? await res.json() : { results: [] };
-        setResults(Array.isArray(data.results) ? data.results.slice(0, 6) : []);
+        setResults(Array.isArray(data.results) ? data.results.slice(0, 10) : []);
         setOpen(true);
       } catch (error) {
         if (error.name !== "AbortError") {

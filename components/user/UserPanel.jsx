@@ -13,6 +13,7 @@ export default function UserPanel() {
   const setAuthView = useMovieStore((state) => state.setAuthView);
   const updateUser = useMovieStore((state) => state.updateUser);
   const favorites = useMovieStore((state) => state.favorites);
+  const watchlist = useMovieStore((state) => state.watchlist);
   const viewedHistory = useMovieStore((state) => state.viewedHistory);
   const comments = useMovieStore((state) => state.comments);
   const [form, setForm] = useState({
@@ -132,8 +133,9 @@ export default function UserPanel() {
         </form>
       </article>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         <Panel title="Favoritos" items={favorites} empty="Sin favoritos." />
+        <Panel title="Seguimiento" items={watchlist} empty="Sin estrenos en seguimiento." />
         <Panel title="Historial" items={viewedHistory} empty="Sin peliculas vistas." />
         <article className="netflix-panel p-4">
           <h2 className="text-xl font-black">Comentarios</h2>

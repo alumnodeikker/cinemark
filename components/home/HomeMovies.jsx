@@ -6,7 +6,6 @@ import {
   getPopularMovies,
   getCurrentTheatricalActors,
   getTopRatedMovies,
-  getUpcomingMoviesSoon,
   getUpcomingMoviesWithTrailers,
   getWeeklyTopMovies,
 } from "@/lib/tmdb";
@@ -16,16 +15,18 @@ import CelebrityCarousel from "@/components/home/CelebrityCarousel";
 import Top10Grid from "@/components/home/Top10Grid";
 import LatestTrailers from "@/components/home/LatestTrailers";
 import UpcomingTrailers from "@/components/home/UpcomingTrailers";
+import PersonalizedRecommendations from "@/components/home/PersonalizedRecommendations";
+import WatchTodayRecommendation from "@/components/home/WatchTodayRecommendation";
+import RegionalTrends from "@/components/home/RegionalTrends";
 
 export default async function HomeMovies() {
-  const [peliculas, recientesApi, celebridades, topSemanal, mejorValoradas, estrenosCercanos, proximosEstrenos, ultimosTrailers] =
+  const [peliculas, recientesApi, celebridades, topSemanal, mejorValoradas, proximosEstrenos, ultimosTrailers] =
     await Promise.all([
       getPopularMovies(),
       getNowPlayingMovies(),
       getCurrentTheatricalActors(),
       getWeeklyTopMovies(),
       getTopRatedMovies(),
-      getUpcomingMoviesSoon(15),
       getUpcomingMoviesWithTrailers(),
       getLatestTrailers(),
     ]);
@@ -45,6 +46,8 @@ export default async function HomeMovies() {
 
   return (
     <section className="space-y-7">
+      <WatchTodayRecommendation />
+
       <article className="relative min-h-[55vh] overflow-hidden rounded-sm border border-white/10">
         {destacadaBackdrop && (
           <Image
@@ -99,6 +102,8 @@ export default async function HomeMovies() {
 
       <FeaturedHero principales={recientes.slice(0, 4)} />
 
+      <PersonalizedRecommendations />
+
       <UpcomingTrailers peliculas={proximosEstrenos} />
 
       <section className="space-y-3">
@@ -126,30 +131,7 @@ export default async function HomeMovies() {
 
       <CelebrityCarousel celebridades={celebridades} />
 
-      {estrenosCercanos.length > 0 && (
-        <section className="space-y-3">
-          <h2 className="text-3xl font-black uppercase tracking-wide text-white">
-            Próximos estrenos en 15 días
-          </h2>
-          <div className="poster-rail">
-            {estrenosCercanos.map((peli) => (
-              <MovieCard
-                key={peli.id}
-                id={peli.id}
-                titulo={peli.title}
-                descripcion={peli.overview}
-                rating={peli.vote_average}
-                imagenPath={peli.poster_path}
-                backdropPath={peli.backdrop_path}
-                trailerKey={peli.trailer_key}
-                pelicula={peli}
-                modo="rail"
-                showActions={false}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+      <RegionalTrends />
 
       <Top10Grid peliculas={topSemanal} />
     </section>

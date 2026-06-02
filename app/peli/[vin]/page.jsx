@@ -172,6 +172,7 @@ export default async function FichaPelicula({ params }) {
     vote_average: peli.vote_average ?? 0,
     poster_path: peli.poster_path ?? null,
     backdrop_path: peli.backdrop_path ?? null,
+    trailer_key: trailer?.key ?? null,
   };
   const schema = {
     "@context": "https://schema.org",

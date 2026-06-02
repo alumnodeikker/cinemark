@@ -1,6 +1,8 @@
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { GeolocationBanner } from "@/components/geolocation/GeolocationBanner";
+import ReleaseReminderNotifier from "@/components/notifications/ReleaseReminderNotifier";
+import AssistantFloatingButton from "@/components/assistant/AssistantFloatingButton";
 import { siteConfig } from "@/lib/seo";
 
 export const metadata = {
@@ -50,6 +52,8 @@ export default function RootLayout({ children }) {
             <Header />
             <main className="nfx-content">{children}</main>
             <GeolocationBanner />
+            <ReleaseReminderNotifier />
+            <AssistantFloatingButton />
           </div>
         </div>
       </body>

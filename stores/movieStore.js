@@ -28,6 +28,13 @@ function movieItem(movie) {
     vote_average: movie.vote_average ?? 0,
     poster_path: movie.poster_path ?? null,
     backdrop_path: movie.backdrop_path ?? null,
+    trailer_key: movie.trailer_key ?? null,
+    release_date: movie.release_date ?? "",
+    genre_ids: Array.isArray(movie.genre_ids)
+      ? movie.genre_ids
+      : Array.isArray(movie.genres)
+        ? movie.genres.map((genre) => genre.id).filter(Boolean)
+        : [],
   };
 }
 
@@ -87,6 +94,7 @@ export const useMovieStore = create(
       watchlist: [],
       favoriteActors: [],
       viewedHistory: [],
+      releaseNotifications: {},
       comments: [],
       user: null,
       authView: "login",
@@ -240,6 +248,16 @@ export const useMovieStore = create(
         return nextWatchlist.some((current) => current.id === item.id);
       },
 
+      markReleaseNotified: (movieId, releaseDate) => {
+        if (!movieId) return;
+        set({
+          releaseNotifications: {
+            ...get().releaseNotifications,
+            [movieId]: releaseDate || new Date().toISOString().slice(0, 10),
+          },
+        });
+      },
+
       toggleFavoriteActor: (persona) => {
         if (!persona?.id) return false;
         const item = actorItem(persona);
@@ -330,11 +348,12 @@ export const useMovieStore = create(
     {
       name: "cinemark-state",
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ favorites, watchlist, favoriteActors, viewedHistory, comments, user, geolocation, geolocationConsent }) => ({
+      partialize: ({ favorites, watchlist, favoriteActors, viewedHistory, releaseNotifications, comments, user, geolocation, geolocationConsent }) => ({
         favorites,
         watchlist,
         favoriteActors,
         viewedHistory,
+        releaseNotifications,
         comments,
         user,
         geolocation,
@@ -355,6 +374,7 @@ export const useMovieStore = create(
             ? persisted.favoriteActors
             : readLegacyList(LEGACY_KEYS.favoriteActors),
           viewedHistory: persisted.viewedHistory ?? [],
+          releaseNotifications: persisted.releaseNotifications ?? {},
           comments: persisted.comments ?? [],
           user: persisted.user ?? null,
           geolocation: persisted.geolocation ?? currentState.geolocation,

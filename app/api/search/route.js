@@ -19,7 +19,7 @@ export async function GET(request) {
 
   const data = await searchMovies(q);
   const results = Array.isArray(data?.results)
-    ? data.results.slice(0, 8).map((movie) => ({
+    ? data.results.slice(0, 12).map((movie) => ({
         id: movie.id,
         title: movie.title ?? "",
         overview: movie.overview ?? "",

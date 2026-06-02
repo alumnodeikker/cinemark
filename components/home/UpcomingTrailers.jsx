@@ -72,8 +72,21 @@ export default function UpcomingTrailers({ peliculas = [] }) {
     });
   };
 
-  const toggleWatchlist = (movie) => {
-    toggleStoreWatchlist(movie);
+  const toggleWatchlist = async (movie) => {
+    const isFollowing = toggleStoreWatchlist(movie);
+
+    if (
+      isFollowing &&
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "default"
+    ) {
+      try {
+        await Notification.requestPermission();
+      } catch {
+        // El seguimiento queda guardado aunque el navegador no permita notificaciones.
+      }
+    }
   };
 
   const toggleFavorite = (movie) => {
@@ -236,7 +249,8 @@ export default function UpcomingTrailers({ peliculas = [] }) {
                   <button
                     type="button"
                     aria-pressed={isSaved}
-                    aria-label={isSaved ? "Quitar de proximos guardados" : "Guardar estreno"}
+                    aria-label={isSaved ? "Quitar seguimiento de estreno" : "Seguir estreno y recibir aviso"}
+                    title={isSaved ? "Quitar seguimiento" : "Seguir estreno"}
                     onClick={() => toggleWatchlist(movie)}
                     className={`relative h-10 w-8 border border-white/12 text-2xl leading-none transition ${
                       isSaved ? "bg-amber-400 text-black" : "bg-white/10 text-white hover:bg-white/18"

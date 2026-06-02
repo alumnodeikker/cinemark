@@ -246,6 +246,7 @@ export default function MovieCard({
           <div className="flex gap-2">
             <TrailerModal
               trailerKey={trailerKey}
+              movieId={id}
               title={`Trailer de ${titulo}`}
               className="flex-1 rounded-sm bg-blue-700 px-2 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-blue-600 disabled:opacity-70"
             >
